@@ -23,7 +23,7 @@ Quer dar uma olhada no código front-end?  . [Controle de Ponto Front](https://g
 Siga estas etapas para configurar e executar o projeto localmente:
 
 ```bash
-   git clone https://github.com/anarehder/https-github.com-anarehder-controleDePonto_back
+   git clone https://https://github.com/anarehder/controleDePonto_back
    cd controleDePonto_back
 ```
 
