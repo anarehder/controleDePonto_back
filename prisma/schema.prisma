@@ -17,4 +17,43 @@ model User {
   password         String             @db.VarChar(255)
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @updatedAt
+  HourControl      HourControl[]
+  BankHours        BankHours[]
+  DataControl      DataControl[]
+}
+
+model HourControl {
+  id               Int         @id @default(autoincrement())
+  employeeId       Int
+  User      User     @relation(fields: [employeeId], references: [id])
+  data             DateTime
+  entry_time       DateTime?
+  pause_time       DateTime?
+  return_time      DateTime?
+  exit_time        DateTime?
+  totalWorkedByDay DateTime   
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+}
+
+model BankHours {
+  id                  Int      @id @default(autoincrement())
+  employeeId          Int
+  User                User     @relation(fields: [employeeId], references: [id])
+  month               String
+  workedHoursByMonth  DateTime
+  totalHoursByMonth   DateTime 
+  hoursBankBalance    DateTime 
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model DataControl {
+  id               Int        @id @default(autoincrement())
+  employeeId       Int
+  User             User       @relation(fields: [employeeId], references: [id])
+  tableChanged     String
+  typeOfChange     String
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
 }
