@@ -17,9 +17,19 @@ model User {
   password         String             @db.VarChar(255)
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @updatedAt
+  Session          Session[]
   HourControl      HourControl[]
   BankHours        BankHours[]
   DataControl      DataControl[]
+}
+
+model Session {
+  id            Int      @id @default(autoincrement())
+  employeeId    Int
+  User          User     @relation(fields: [employeeId], references: [id])
+  token         String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 model HourControl {
