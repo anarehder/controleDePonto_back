@@ -9,3 +9,8 @@ export type NewRegistry = {
     date: Date;
     time: Date;
 }
+
+export type ApplicationError = {
+    name: string;
+    message: string;
+};
