@@ -9,6 +9,6 @@ export async function createUserController (req: Request, res: Response) {
         const newUser = await createUserService (name, username, password);
         return res.status(httpStatus.OK).send(newUser);
     } catch (error) {
-        return res.status(httpStatus.UNAUTHORIZED).send("teste");
+        return res.status(httpStatus.UNAUTHORIZED).send(error);
     }
 }

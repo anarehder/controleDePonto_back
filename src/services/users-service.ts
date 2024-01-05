@@ -6,7 +6,6 @@ import bcrypt from "bcrypt";
 
 export async function createUserService(name: string, username: string, password: string): Promise<EmployeeReturn> {
     await validateUniqueUsername(username);
-    console.log("2");
     const hashedPassword = await bcrypt.hash(password, 12);
     const data = {name, username, password: hashedPassword};
     const newUser = await createUserRepository(data)
@@ -15,20 +14,9 @@ export async function createUserService(name: string, username: string, password
 }
 
 async function validateUniqueUsername(username: string) {
-    try {
-        const user = await getUsersByUsernameRepository(username);
-
-        if (user) {
-            console.log('User found:', user);
-        } else {
-            console.log('User not found.');
-        }
-    } catch (error) {
-        console.error('Error while getting user by username:', error);
+    const usernameExists = await getUsersByUsernameRepository(username);
+    console.log("1");
+    if (usernameExists) {
+        throw conflictError("this username already exists");
     }
-    // const usernameExists = await getUsersByUsernameRepository(username);
-    // console.log("1");
-    // if (usernameExists) {
-    //     throw conflictError("this username already exists");
-    // }
 }
