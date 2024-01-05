@@ -36,7 +36,7 @@ model HourControl {
   id               Int         @id @default(autoincrement())
   employeeId       Int
   User      User     @relation(fields: [employeeId], references: [id])
-  data             DateTime
+  day              DateTime
   entry_time       DateTime?
   pause_time       DateTime?
   return_time      DateTime?
