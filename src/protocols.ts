@@ -1,7 +1,18 @@
-export type newUser = {
+export type NewUserInput = {
     name: string;
     username: string;
     password: string;
+};
+
+export type LoginParams = {
+    username: string;
+    password: string;
+};
+
+export type EmployeeReturn = {
+    id: number;
+    name: string;
+    username: string;
 };
 
 export type NewRegistry = {
