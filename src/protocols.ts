@@ -4,15 +4,20 @@ export type NewUserInput = {
     password: string;
 };
 
-export type LoginParams = {
-    username: string;
-    password: string;
-};
+export type LoginParams = Omit<NewUserInput, 'name'>;
 
-export type EmployeeReturn = {
+export type EmployeeLogin = {
     id: number;
     name: string;
     username: string;
+    token: string;
+};
+
+export type EmployeeReturn = Omit<EmployeeLogin, 'token'>;
+
+export type SessionInput = {
+    employeeId: number;
+    token: string;
 };
 
 export type NewRegistry = {

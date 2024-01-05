@@ -1,7 +1,8 @@
 import { prisma } from "@/config";
-import { Prisma } from "@prisma/client";
+import { SessionInput } from "@/protocols";
 
-export async function createSessionRepository (data: Prisma.SessionCreateInput) {
+export async function createSessionRepository (data: SessionInput) {
+
     return prisma.session.create({
         data,
     });

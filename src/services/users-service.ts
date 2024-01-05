@@ -1,6 +1,6 @@
 import { conflictError } from "@/errors";
 import { EmployeeReturn } from "@/protocols";
-import { createUserRepository, getUsersByUsernameRepository } from "@/repositories";
+import { createUserRepository, getUsersByUsernameRepository, getUsersListRepository } from "@/repositories";
 import { User } from "@prisma/client";
 import bcrypt from "bcrypt";
 
@@ -15,8 +15,17 @@ export async function createUserService(name: string, username: string, password
 
 async function validateUniqueUsername(username: string) {
     const usernameExists = await getUsersByUsernameRepository(username);
-    console.log("1");
     if (usernameExists) {
         throw conflictError("this username already exists");
     }
+}
+
+export async function getUsersService(): Promise<EmployeeReturn[]> {
+    const users = await getUsersListRepository();
+    const formattedUsers: EmployeeReturn[] = users.map(user => ({
+        id: user.id,
+        name: user.name,
+        username: user.username,
+    }));
+    return formattedUsers;
 }
