@@ -1,10 +1,11 @@
-import { getMonthHoursController, getTodayHoursController } from "@/controllers";
-import { authenticateToken } from "@/middlewares";
+import { getMonthHoursController, getTodayHoursController, postBankHourController } from "@/controllers";
+import { authenticateToken, validateBody } from "@/middlewares";
+import { addRegistrySchema } from "@/schemas";
 import { Router } from "express";
 
 const bankRouter = Router();
 
-bankRouter.post("/", (_req, res) => res.send("POST!"));
+bankRouter.post("/", authenticateToken, validateBody(addRegistrySchema), postBankHourController);
 bankRouter.get("/:month", authenticateToken, getMonthHoursController);
 bankRouter.get("/", authenticateToken, getTodayHoursController);
 bankRouter.put("/", (_req, res) => res.send("PUT!"));

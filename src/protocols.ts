@@ -1,3 +1,5 @@
+import { HourControl, BankHours } from "@prisma/client";
+
 export type NewUserInput = {
     name: string;
     username: string;
@@ -20,10 +22,40 @@ export type SessionInput = {
     token: string;
 };
 
+export type NewRegistryInput = {
+    day: Date;
+    type: string;
+    time: Date;
+}
+
 export type NewRegistry = {
     employeeId: number;
-    date: Date;
-    time: Date;
+    day: Date;
+    entry_time?: Date;
+    pause_time?: Date;
+    return_time?: Date;
+    exit_time?: Date;
+    totalWorkedByDay: Date;
+}
+
+export type UpdateRegistry = {
+    employeeId: number;
+    day: Date;
+    entry_time?: Date;
+    pause_time?: Date;
+    return_time?: Date;
+    exit_time?: Date;
+}
+
+
+export type SummaryReport = {
+    hourControls: HourControl | null;
+    bankHours: BankHours | null;
+    bankBalanceLastMonth: {hoursBankBalance: Date} | null;
+}
+
+export type LastMonthBalance = {
+    hoursBankBalance: Date | null;
 }
 
 export type ApplicationError = {
