@@ -34,6 +34,7 @@ export async function postBankHourController (req: AuthenticatedRequest, res: Re
         const hours = await postBankHourService(employeeId, day, time, type);
         if (hours.entry_time && hours.pause_time && hours.return_time && hours.exit_time) {
             const totalHours = await calculateHours(hours.id);
+            console.log(totalHours);
             return res.status(httpStatus.OK).send(totalHours);
         }
         return res.status(httpStatus.OK).send(hours);
