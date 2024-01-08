@@ -21,6 +21,9 @@ export async function getMonthHoursByEmployeeRepository(employeeId: number, star
                 lte: endDate,
             },
         },
+        orderBy: {
+            day: 'desc',
+        },
     });
 }
 
