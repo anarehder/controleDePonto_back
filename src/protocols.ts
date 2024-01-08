@@ -51,11 +51,15 @@ export type UpdateRegistry = {
 export type SummaryReport = {
     hourControls: HourControl | null;
     bankHours: BankHours | null;
-    bankBalanceLastMonth: {hoursBankBalance: Date} | null;
+    bankBalanceLastMonth: {hoursBankBalance: String} | null;
 }
 
 export type LastMonthBalance = {
-    hoursBankBalance: Date | null;
+    hoursBankBalance: String | null;
+}
+
+export type TotalWorkedHoursByMonth = {
+    total: String | null;
 }
 
 export type ApplicationError = {

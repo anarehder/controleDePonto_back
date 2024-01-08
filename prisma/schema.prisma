@@ -35,15 +35,15 @@ model Session {
 model HourControl {
   id               Int         @id @default(autoincrement())
   employeeId       Int
-  User      User     @relation(fields: [employeeId], references: [id])
+  User             User        @relation(fields: [employeeId], references: [id])
   day              DateTime
-  entry_time       TIME?
-  pause_time       TIME?
-  return_time      TIME?
-  exit_time        TIME?
-  totalWorkedByDay TIME   
-  createdAt        DateTime   @default(now())
-  updatedAt        DateTime   @updatedAt
+  entry_time       DateTime?
+  pause_time       DateTime?
+  return_time      DateTime?
+  exit_time        DateTime?
+  totalWorkedByDay DateTime   
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
 }
 
 model BankHours {
@@ -51,9 +51,9 @@ model BankHours {
   employeeId          Int
   User                User     @relation(fields: [employeeId], references: [id])
   month               String
-  workedHoursByMonth  DateTime
-  totalHoursByMonth   DateTime 
-  hoursBankBalance    DateTime 
+  workedHoursByMonth  String
+  totalHoursByMonth   String 
+  hoursBankBalance    String 
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
 }

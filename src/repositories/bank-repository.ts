@@ -1,16 +1,15 @@
 import { prisma } from "@/config";
-import { LastMonthBalance, NewRegistry, UpdateRegistry } from "@/protocols";
+import { LastMonthBalance, NewRegistry, TotalWorkedHoursByMonth, UpdateRegistry } from "@/protocols";
 import { BankHours, HourControl } from "@prisma/client";
 
-export async function getTodayHoursByEmployeeRepository(employeeId: number, today: Date): Promise <HourControl> {
-    return await prisma.hourControl.findFirst({
+export async function getTodayHoursByEmployeeRepository(employeeId: number, day: Date): Promise<HourControl | null> {
+    const result = await prisma.hourControl.findFirst({
         where: {
             employeeId,
-            day: {
-                equals: today,
-            },
-        },
-    });
+            day,
+        }
+    })
+    return result || null;
 }
 
 export async function getMonthHoursByEmployeeRepository(employeeId: number, startDate: Date, endDate: Date): Promise <HourControl[]> {
@@ -91,9 +90,9 @@ export async function updateTotalWorkedByDayRepository(id: number): Promise<Hour
     });
 }
 
-export async function getMonthWorkedHoursByEmployeeRespository(employeeId: number, startDate: Date, endDate: Date) {
-    await prisma.$queryRaw`
-        SELECT SUM(totalWorkedByDay) as total 
+export async function getMonthWorkedHoursByEmployeeRespository(employeeId: number, startDate: Date, endDate: Date): Promise<TotalWorkedHoursByMonth> {
+    return await prisma.$queryRaw`
+        SELECT FROM_UNIXTIME(SUM(UNIX_TIMESTAMP(totalWorkedByDay))) as total 
         FROM HourControl 
         WHERE employeeId = ${employeeId} 
         AND day BETWEEN ${startDate} AND ${endDate}`

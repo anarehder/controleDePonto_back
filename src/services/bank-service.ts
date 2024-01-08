@@ -1,10 +1,13 @@
 import { invalidParamError } from "@/errors";
 import { SummaryReport } from "@/protocols";
-import { getMonthHoursByEmployeeRepository, getSummaryReport, getSummaryReportLastMonth, getTodayHoursByEmployeeRepository, postBankHoursRepository, updateBankHoursRepository, updateTotalWorkedByDayRepository } from "@/repositories";
+import { getMonthHoursByEmployeeRepository, getMonthWorkedHoursByEmployeeRespository, getSummaryReport, getSummaryReportLastMonth, getTodayHoursByEmployeeRepository, postBankHoursRepository, updateBankHoursRepository, updateTotalWorkedByDayRepository } from "@/repositories";
 
-export async function getTodayHoursService(employeeId:number, today: Date): Promise <SummaryReport> {
-    const yearMonth = `${today.getFullYear()}-${today.getMonth() + 1}`;
-    const yearLastMonth = `${today.getFullYear()}-${today.getMonth()}`;
+export async function getTodayHoursService(employeeId:number, day: string): Promise <SummaryReport> {
+    const today = new Date(day);
+
+    const yearMonth = `${new Date().getFullYear()}-${new Date().getMonth() + 1}`;
+    const yearLastMonth = `${new Date().getFullYear()}-${new Date().getMonth()}`;
+
     const hours = await getTodayHoursByEmployeeRepository(employeeId, today);
     const summary = await getSummaryReport(employeeId,yearMonth);
     const lastMonth = await getSummaryReportLastMonth(employeeId,yearLastMonth);
@@ -20,7 +23,7 @@ export async function getMonthHoursService(employeeId:number, month: string) {
 }
 
 export async function postBankHourService(employeeId: number, day: Date, time: Date, type: string) {
-    const registryExists = await getTodayHoursByEmployeeRepository(employeeId, new Date(day));
+    const registryExists = await getTodayHoursByEmployeeRepository(employeeId, day);
 
     const formattedTime = `${day}T${time}Z`
     if (registryExists) {
@@ -33,6 +36,13 @@ export async function postBankHourService(employeeId: number, day: Date, time: D
         const hours = await postBankHoursRepository(data);
         return hours;
     }
+}
+
+function getDate(day: string){
+    const today = new Date(day);
+    console.log(today, "today");
+    today.setHours(0, 0, 0, 0);
+    return today;
 }
 
 function checkMonth (yearMonth: string) {
@@ -53,9 +63,20 @@ export async function calculateHours(id: number) {
     return result;
 }
 
-export async function calculateMonthHours (yearMonth: string) {
+export async function calculateMonthHours (employeeId: number, day: Date) {
+    const date = new Date();
+    const yearMonth = `${date.getUTCFullYear()}-${date.getUTCMonth() + 1}`;
     const { startDate, endDate } = checkMonth(yearMonth);
+    const total = await getMonthWorkedHoursByEmployeeRespository(employeeId, startDate, endDate);
+    console.log(total);
+    // const date2 = new Date (total.total);
+    // console.log(date2);
+    const totalEmMilissegundos = Number(total.total);
+    const totalEmHoras = totalEmMilissegundos / (60 * 60 * 1000);
+    console.log(totalEmHoras);
+    return totalEmHoras;
 }
+
 // juntar todas as totalworkedbyday e somar elas mas também dos meses seguintes
 // worked é o total
 // total é worked -176
