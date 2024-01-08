@@ -53,9 +53,14 @@ export type SummaryReport = {
     bankBalanceLastMonth: {hoursBankBalance: String} | null;
 }
 
-export type LastMonthBalance = {
+export type MonthBalance = {
     hoursBankBalance: String | null;
 }
+
+export type MonthTotalHours = {
+    totalHoursByMonth: string | null;
+}
+
 
 export type TotalWorkedHoursByMonth = {
     totalWorkedSeconds: number;
@@ -73,6 +78,10 @@ export type NewBankHoursRegistry = {
 export type UpdateBankHoursRegistry = {
     workedHoursByMonth: string;
     totalHoursByMonth: string;
+    hoursBankBalance: string;
+}
+
+export type UpdateBankHoursBalance = {
     hoursBankBalance: string;
 }
 

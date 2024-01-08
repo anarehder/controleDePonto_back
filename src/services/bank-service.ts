@@ -1,6 +1,6 @@
 import { invalidParamError } from "@/errors";
 import { SummaryReport, TotalWorkedHoursByMonth } from "@/protocols";
-import { getMonthHoursByEmployeeRepository, getMonthWorkedHoursByEmployeeRespository, getSummaryReportRepository, getSummaryReportLastMonthRepository, getTodayHoursByEmployeeRepository, postBankControlRepository, updateBankControlRepository, updateTotalWorkedByDayRepository, getBankHoursRepository, updateBankHoursRepository, postBankHoursRepository } from "@/repositories";
+import { getMonthHoursByEmployeeRepository, getMonthWorkedHoursByEmployeeRespository, getSummaryReportRepository, getSummaryReportMonthRepository, getTodayHoursByEmployeeRepository, postBankControlRepository, updateBankControlRepository, updateTotalWorkedByDayRepository, getBankHoursRepository, updateBankHoursRepository, postBankHoursRepository, getSummaryReportHoursByMonthRepository } from "@/repositories";
 
 export async function getTodayHoursService(employeeId:number, day: string): Promise <SummaryReport> {
     const today = new Date(day);
@@ -9,7 +9,7 @@ export async function getTodayHoursService(employeeId:number, day: string): Prom
 
     const hours = await getTodayHoursByEmployeeRepository(employeeId, today);
     const summary = await getSummaryReportRepository(employeeId,yearMonth);
-    const lastMonth = await getSummaryReportLastMonthRepository(employeeId,yearLastMonth);
+    const lastMonth = await getSummaryReportMonthRepository(employeeId,yearLastMonth);
 
     const response = {hourControls: hours, bankHours: summary, bankBalanceLastMonth: lastMonth}
     return response;
@@ -57,7 +57,7 @@ export async function calculateHours(id: number, employeeId: number, day:Date) {
     
     //atualizar o do mês que estou alterando
     const updatedDate = new Date(day);
-    const yearMonth = `${updatedDate.getUTCFullYear()}-${updatedDate.getUTCMonth() + 1}`;
+    const yearMonth = `${updatedDate.getUTCFullYear()}-${(updatedDate.getUTCMonth() + 1).toString().padStart(2, '0')}`;
     
     const { startDate, endDate } = checkMonth(yearMonth);
     const updatedMonthHours = await getMonthWorkedHoursByEmployeeRespository(employeeId, startDate, endDate); // pego a soma do mês
@@ -69,10 +69,12 @@ export async function calculateHours(id: number, employeeId: number, day:Date) {
     if (registryExists) {
         const data = {workedHoursByMonth: updatedMonthCalculatedHours, totalHoursByMonth: totalHoursUpdatedMonth, hoursBankBalance: updatedMonthBalance};
         const bankHours = await updateBankHoursRepository(registryExists.id, data);
+        await checkNextMonths(day, employeeId);
         return {workedTodayAmount, bankHours};
     } else {
         const data = {employeeId, month: yearMonth, workedHoursByMonth: updatedMonthCalculatedHours, totalHoursByMonth: totalHoursUpdatedMonth, hoursBankBalance: updatedMonthBalance};
         const bankHours = await postBankHoursRepository(data);
+        await checkNextMonths(day, employeeId);
         return {workedTodayAmount, bankHours};
     }
 }
@@ -101,8 +103,7 @@ function calculateMonthTotalHours(updatedMonthCalculatedHours: string){
 
 async function calculateMonthBalance (updatedDate: Date, employeeId: number, totalHoursUpdatedMonth: string) {
     const yearLastMonth = calculateYearLastMonth(updatedDate);
-    const lastMonthBalance = await getSummaryReportLastMonthRepository(employeeId, yearLastMonth);//obter saldo mês anterior
-
+    const lastMonthBalance = await getSummaryReportMonthRepository(employeeId, yearLastMonth);//obter saldo mês anterior
     if (!lastMonthBalance || lastMonthBalance.hoursBankBalance === "0" || lastMonthBalance.hoursBankBalance === "00:00"){
         const monthBalance = totalHoursUpdatedMonth;
         return monthBalance;
@@ -113,7 +114,6 @@ async function calculateMonthBalance (updatedDate: Date, employeeId: number, tot
         const formattedLastMinutes = Number(lastMonthBalance.hoursBankBalance.slice(0,1) + lastMinutes);
 
         const totalAmountInMinutes = (hours*60) + formattedMinutes + (lastHours*60) + formattedLastMinutes;
-
         const totalHours = (totalAmountInMinutes / 60).toFixed(2);
         const totalMinutes = totalAmountInMinutes % 60;
         const monthBalance =`${String(totalHours).slice(0,-3).padStart(2, '0')}:${String(totalMinutes).slice(1).padStart(2, '0')}`;
@@ -130,5 +130,53 @@ function calculateYearLastMonth(date: Date) {
         const yearLastMonth = `${new Date().getFullYear()}-${new Date().getMonth()}`;
         return yearLastMonth;
     }
-    
+}
+
+// conferir se tem meses subsequentes para alterar também...
+export async function checkNextMonths (day: Date, employeeId: number){
+    const today = new Date();
+    const date = new Date(day);
+    const monthDifference = ((today.getFullYear()-date.getFullYear())*12) + (today.getMonth()-date.getMonth());
+    console.log(monthDifference);
+    for (let i = 0; i < monthDifference + 1; i++) {
+        console.log(i);
+        const testMonth = date.getMonth() + 1 + i;
+        if ((testMonth / 12) > 1) {
+            const year = date.getFullYear() + 1;
+            const month = testMonth % 12;
+            const yearMonth = `${year}-${String(month).padStart(2, '0')}`;
+            const updatedDate = new Date(`${year}-${month}-01`);
+            const { totalHoursByMonth } = await getSummaryReportHoursByMonthRepository(employeeId, yearMonth);
+            console.log(yearMonth, totalHoursByMonth, "trabalhado no mes");
+            const totalHoursUpdatedMonth = await calculateMonthBalance(updatedDate, employeeId, totalHoursByMonth);
+            console.log("saldo", totalHoursUpdatedMonth);
+            const registryExists = await getBankHoursRepository(employeeId, yearMonth);
+            if (registryExists) {
+                const data = { hoursBankBalance: totalHoursUpdatedMonth };
+                console.log(data);
+                await updateBankHoursRepository(registryExists.id, data);
+            } else {
+                const data = { employeeId, month: yearMonth, workedHoursByMonth: "00:00", totalHoursByMonth: "00:00", hoursBankBalance: totalHoursUpdatedMonth };
+                await postBankHoursRepository(data);
+            }
+        } else {
+            const year = date.getFullYear();
+            const month = testMonth;
+            const yearMonth = `${year}-${String(month).padStart(2, '0')}`;
+            const updatedDate = new Date(`${year}-${month}-01`);
+            const { totalHoursByMonth } = await getSummaryReportHoursByMonthRepository(employeeId, yearMonth);
+            console.log(yearMonth, totalHoursByMonth, "trabalhado no mes");
+            const totalHoursUpdatedMonth = await calculateMonthBalance(updatedDate, employeeId, totalHoursByMonth);
+            console.log("saldo", totalHoursUpdatedMonth);
+            const registryExists = await getBankHoursRepository(employeeId, yearMonth);
+            if (registryExists) {
+                const data = { hoursBankBalance: totalHoursUpdatedMonth };
+                console.log(data);
+                await updateBankHoursRepository(registryExists.id, data);
+            } else {
+                const data = { employeeId, month: yearMonth, workedHoursByMonth: "00:00", totalHoursByMonth: "00:00", hoursBankBalance: totalHoursUpdatedMonth };
+                await postBankHoursRepository(data);
+            }
+        }
+    }
 }

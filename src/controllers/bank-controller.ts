@@ -1,6 +1,6 @@
 import { AuthenticatedRequest } from "@/middlewares";
 import { NewRegistryInput, PostHoursCompleteReturn } from "@/protocols";
-import { calculateHours, getMonthHoursService, getTodayHoursService, postBankHourService } from "@/services";
+import { calculateHours, checkNextMonths, getMonthHoursService, getTodayHoursService, postBankHourService } from "@/services";
 import { Response } from "express";
 import httpStatus from "http-status";
 

@@ -1,5 +1,5 @@
 import { prisma } from "@/config";
-import { LastMonthBalance, NewBankHoursRegistry, NewRegistry, TotalWorkedHoursByMonth, UpdateBankHoursRegistry, UpdateRegistry } from "@/protocols";
+import { MonthBalance, MonthTotalHours, NewBankHoursRegistry, NewRegistry, TotalWorkedHoursByMonth, UpdateBankHoursBalance, UpdateBankHoursRegistry, UpdateRegistry } from "@/protocols";
 import { BankHours, HourControl } from "@prisma/client";
 
 export async function getTodayHoursByEmployeeRepository(employeeId: number, day: Date): Promise<HourControl | null> {
@@ -35,8 +35,8 @@ export async function getSummaryReportRepository(employeeId: number, yearMonth: 
     });
 }
 
-export async function getSummaryReportLastMonthRepository(employeeId: number, yearMonth: string): Promise<LastMonthBalance> {
-    return await prisma.bankHours.findFirst({
+export async function getSummaryReportMonthRepository(employeeId: number, yearMonth: string): Promise<MonthBalance> {
+    const result = await prisma.bankHours.findFirst({
         where: {
             employeeId,
             month: {
@@ -47,6 +47,22 @@ export async function getSummaryReportLastMonthRepository(employeeId: number, ye
             hoursBankBalance: true,
         },
     });
+    return result || { hoursBankBalance: "00:00" };
+}
+
+export async function getSummaryReportHoursByMonthRepository(employeeId: number, yearMonth: string): Promise<MonthTotalHours> {
+    const result = await prisma.bankHours.findFirst({
+        where: {
+            employeeId,
+            month: {
+                equals: yearMonth,
+            },
+        },
+        select: {
+            totalHoursByMonth: true,
+        },
+    });
+    return result || { totalHoursByMonth: "00:00" };
 }
 
 export async function postBankControlRepository(data: NewRegistry): Promise<HourControl> {
@@ -104,7 +120,7 @@ export async function postBankHoursRepository (data: NewBankHoursRegistry): Prom
     })
 }
 
-export async function updateBankHoursRepository (id: number, data: UpdateBankHoursRegistry): Promise<BankHours> {
+export async function updateBankHoursRepository (id: number, data: UpdateBankHoursRegistry | UpdateBankHoursBalance): Promise<BankHours> {
     return await prisma.bankHours.update({
         where: {
             id,
