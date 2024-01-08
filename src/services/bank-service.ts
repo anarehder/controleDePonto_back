@@ -23,16 +23,17 @@ export async function getMonthHoursService(employeeId:number, month: string) {
 }
 
 export async function postBankHourService(employeeId: number, day: Date, time: Date, type: string) {
-    const registryExists = await getTodayHoursByEmployeeRepository(employeeId, day);
+    const dayZero = new Date(day);
+    const registryExists = await getTodayHoursByEmployeeRepository(employeeId, dayZero);
 
     const formattedTime = `${day}T${time}Z`
     if (registryExists) {
+        const formattedTime = `${day}T${time}Z`
         const data = {employeeId, day: new Date(day), [type]: new Date(formattedTime)};
         const hours = await updateBankHoursRepository(registryExists.id, data);
         return hours;
     } else {
-        const totalWorkedByDay = `${day}T00:00:00Z`
-        const data = {employeeId, day: new Date(day), [type]: new Date(formattedTime), totalWorkedByDay: new Date(totalWorkedByDay)};
+        const data = {employeeId, day: new Date(day), [type]: new Date(formattedTime), totalWorkedByDay: new Date(dayZero)};
         const hours = await postBankHoursRepository(data);
         return hours;
     }
