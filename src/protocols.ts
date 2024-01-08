@@ -47,7 +47,6 @@ export type UpdateRegistry = {
     exit_time?: Date;
 }
 
-
 export type SummaryReport = {
     hourControls: HourControl | null;
     bankHours: BankHours | null;
@@ -59,7 +58,27 @@ export type LastMonthBalance = {
 }
 
 export type TotalWorkedHoursByMonth = {
-    total: String | null;
+    totalWorkedSeconds: number;
+    employeeId: number;
+}
+
+export type NewBankHoursRegistry = {
+    employeeId: number;
+    month: string;
+    workedHoursByMonth: string;
+    totalHoursByMonth: string;
+    hoursBankBalance: string;
+}
+
+export type UpdateBankHoursRegistry = {
+    workedHoursByMonth: string;
+    totalHoursByMonth: string;
+    hoursBankBalance: string;
+}
+
+export type PostHoursCompleteReturn = {
+    workedTodayAmount: HourControl;
+    bankHours: BankHours;
 }
 
 export type ApplicationError = {

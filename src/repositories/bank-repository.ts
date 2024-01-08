@@ -1,5 +1,5 @@
 import { prisma } from "@/config";
-import { LastMonthBalance, NewRegistry, TotalWorkedHoursByMonth, UpdateRegistry } from "@/protocols";
+import { LastMonthBalance, NewBankHoursRegistry, NewRegistry, TotalWorkedHoursByMonth, UpdateBankHoursRegistry, UpdateRegistry } from "@/protocols";
 import { BankHours, HourControl } from "@prisma/client";
 
 export async function getTodayHoursByEmployeeRepository(employeeId: number, day: Date): Promise<HourControl | null> {
@@ -24,7 +24,7 @@ export async function getMonthHoursByEmployeeRepository(employeeId: number, star
     });
 }
 
-export async function getSummaryReport(employeeId: number, yearMonth: string): Promise <BankHours> {
+export async function getSummaryReportRepository(employeeId: number, yearMonth: string): Promise <BankHours> {
     return await prisma.bankHours.findFirst({
         where: {
             employeeId,
@@ -35,7 +35,7 @@ export async function getSummaryReport(employeeId: number, yearMonth: string): P
     });
 }
 
-export async function getSummaryReportLastMonth(employeeId: number, yearMonth: string): Promise<LastMonthBalance> {
+export async function getSummaryReportLastMonthRepository(employeeId: number, yearMonth: string): Promise<LastMonthBalance> {
     return await prisma.bankHours.findFirst({
         where: {
             employeeId,
@@ -49,13 +49,13 @@ export async function getSummaryReportLastMonth(employeeId: number, yearMonth: s
     });
 }
 
-export async function postBankHoursRepository(data: NewRegistry): Promise<HourControl> {
+export async function postBankControlRepository(data: NewRegistry): Promise<HourControl> {
     return await prisma.hourControl.create({
         data
     });
 }
 
-export async function updateBankHoursRepository(id: number, data: UpdateRegistry): Promise<HourControl> {
+export async function updateBankControlRepository(id: number, data: UpdateRegistry): Promise<HourControl> {
     return await prisma.hourControl.update({
         where: {
             id,
@@ -90,10 +90,34 @@ export async function updateTotalWorkedByDayRepository(id: number): Promise<Hour
     });
 }
 
-export async function getMonthWorkedHoursByEmployeeRespository(employeeId: number, startDate: Date, endDate: Date): Promise<TotalWorkedHoursByMonth> {
+export async function getMonthWorkedHoursByEmployeeRespository(employeeId: number, startDate: Date, endDate: Date): Promise<TotalWorkedHoursByMonth[]> {
     return await prisma.$queryRaw`
-        SELECT FROM_UNIXTIME(SUM(UNIX_TIMESTAMP(totalWorkedByDay))) as total 
-        FROM HourControl 
-        WHERE employeeId = ${employeeId} 
-        AND day BETWEEN ${startDate} AND ${endDate}`
+        SELECT employeeId, SUM(TIME_TO_SEC(totalWorkedByDay)) AS totalWorkedSeconds
+        FROM HourControl
+        WHERE employeeId = ${employeeId} AND day BETWEEN ${startDate} AND ${endDate}
+        GROUP BY employeeId`
+}
+
+export async function postBankHoursRepository (data: NewBankHoursRegistry): Promise<BankHours>  {
+    return await prisma.bankHours.create({
+        data
+    })
+}
+
+export async function updateBankHoursRepository (id: number, data: UpdateBankHoursRegistry): Promise<BankHours> {
+    return await prisma.bankHours.update({
+        where: {
+            id,
+        },
+        data
+    })
+}
+
+export async function getBankHoursRepository (employeeId: number, month: string): Promise<BankHours> {
+    return await prisma.bankHours.findFirst({
+        where: {
+            employeeId,
+            month
+        },
+    })
 }
