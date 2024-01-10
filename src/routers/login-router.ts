@@ -6,6 +6,6 @@ import { Router } from "express";
 const loginRouter = Router();
 
 loginRouter.post("/", validateBody(loginSchema), loginController);
-loginRouter.post("/logout", authenticateToken, logoutController);
+loginRouter.delete("/logout", authenticateToken, logoutController);
 
 export {loginRouter};
