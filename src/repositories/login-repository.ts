@@ -7,3 +7,12 @@ export async function createSessionRepository (data: SessionInput) {
         data,
     });
 }
+
+
+export async function deleteSessionRepository (token: string) {
+    return prisma.session.delete({
+        where: {
+            token,
+        }
+    })
+}

@@ -1,6 +1,6 @@
 import { invalidCredentialsError } from "@/errors";
 import { EmployeeLogin, LoginParams } from "@/protocols";
-import { createSessionRepository, getUsersByUsernameRepository } from "@/repositories";
+import { createSessionRepository, deleteSessionRepository, getUsersByUsernameRepository } from "@/repositories";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
@@ -30,4 +30,11 @@ async function createSession(employeeId: number) {
 async function validatePassword(password: string, userPassword: string) {
     const isPasswordValid = await bcrypt.compare(password, userPassword);
     if (!isPasswordValid) throw invalidCredentialsError();
+}
+
+export async function deleteSessionService(userToken: string) {
+    const token = userToken.slice(7);
+    await deleteSessionRepository(token);
+
+    return token;
 }
