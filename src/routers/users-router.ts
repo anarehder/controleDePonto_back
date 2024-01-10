@@ -5,7 +5,7 @@ import { Router } from "express";
 
 const usersRouter = Router();
 
-usersRouter.post("/", validateBody(createUserSchema), createUserController);
+usersRouter.post("/", authenticateToken, validateBody(createUserSchema), createUserController);
 usersRouter.get("/", authenticateToken, getUsersController);
 usersRouter.put("/", (_req, res) => res.send("PUT!"));
 usersRouter.delete("/", (_req, res) => res.send("DELETE!"));
