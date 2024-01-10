@@ -1,6 +1,6 @@
 import { AuthenticatedRequest } from "@/middlewares";
-import { GetUserReportInput, NewRegistryInput, PostHoursCompleteReturn } from "@/protocols";
-import { calculateHours, checkNextMonths, getMonthHoursService, getTodayHoursService, postBankHourService } from "@/services";
+import { GetUserReportInput, NewRegistryInput } from "@/protocols";
+import { updateBankHours, getMonthHoursService, getTodayHoursService, postBankHourService } from "@/services";
 import { Response } from "express";
 import httpStatus from "http-status";
 
@@ -33,7 +33,7 @@ export async function postBankHourController (req: AuthenticatedRequest, res: Re
     try {
         const hours = await postBankHourService(employeeId, day, time, type);
         if (hours.entry_time && hours.pause_time && hours.return_time && hours.exit_time) {
-            const response: PostHoursCompleteReturn = await calculateHours(hours.id, employeeId, day);
+            const response = await updateBankHours(hours.id, employeeId, day);
             return res.status(httpStatus.OK).send(response);
         }
         return res.status(httpStatus.OK).send(hours);

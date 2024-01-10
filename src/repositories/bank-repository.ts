@@ -1,5 +1,5 @@
 import { prisma } from "@/config";
-import { MonthBalance, MonthTotalHours, NewBankHoursRegistry, NewRegistry, TotalWorkedHoursByMonth, UpdateBankHoursBalance, UpdateBankHoursRegistry, UpdateRegistry } from "@/protocols";
+import { MonthBalance, MonthTotalHours, NewBankHoursRegistry, NewRegistry, TotalWorkedHoursByMonth, UpdateBankHoursRegistry, UpdateRegistry } from "@/protocols";
 import { BankHours, HourControl } from "@prisma/client";
 
 export async function getTodayHoursByEmployeeRepository(employeeId: number, day: Date): Promise<HourControl | null> {
@@ -123,7 +123,7 @@ export async function postBankHoursRepository (data: NewBankHoursRegistry): Prom
     })
 }
 
-export async function updateBankHoursRepository (id: number, data: UpdateBankHoursRegistry | UpdateBankHoursBalance): Promise<BankHours> {
+export async function updateBankHoursRepository (id: number, data: UpdateBankHoursRegistry): Promise<BankHours> {
     return await prisma.bankHours.update({
         where: {
             id,

@@ -81,13 +81,9 @@ export type NewBankHoursRegistry = {
 }
 
 export type UpdateBankHoursRegistry = {
-    workedHoursByMonth: string;
-    totalHoursByMonth: string;
-    hoursBankBalance: string;
-}
-
-export type UpdateBankHoursBalance = {
-    hoursBankBalance: string;
+    workedHoursByMonth?: string;
+    totalHoursByMonth?: string;
+    hoursBankBalance?: string;
 }
 
 export type PostHoursCompleteReturn = {
