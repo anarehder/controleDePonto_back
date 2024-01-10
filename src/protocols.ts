@@ -22,6 +22,11 @@ export type SessionInput = {
     token: string;
 };
 
+export type GetUserReportInput = {
+    month: string;
+    employeeId: number;
+}
+
 export type NewRegistryInput = {
     day: Date;
     type: string;

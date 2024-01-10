@@ -1,5 +1,5 @@
 import { AuthenticatedRequest } from "@/middlewares";
-import { NewRegistryInput, PostHoursCompleteReturn } from "@/protocols";
+import { GetUserReportInput, NewRegistryInput, PostHoursCompleteReturn } from "@/protocols";
 import { calculateHours, checkNextMonths, getMonthHoursService, getTodayHoursService, postBankHourService } from "@/services";
 import { Response } from "express";
 import httpStatus from "http-status";
@@ -36,6 +36,16 @@ export async function postBankHourController (req: AuthenticatedRequest, res: Re
             const response: PostHoursCompleteReturn = await calculateHours(hours.id, employeeId, day);
             return res.status(httpStatus.OK).send(response);
         }
+        return res.status(httpStatus.OK).send(hours);
+    } catch (error) {
+        return res.status(httpStatus.UNAUTHORIZED).send(error);
+    }
+}
+
+export async function getUserReportController (req: AuthenticatedRequest, res: Response) {
+    const { month, employeeId } = req.body as GetUserReportInput;
+    try {
+        const hours = await getMonthHoursService(employeeId, month);
         return res.status(httpStatus.OK).send(hours);
     } catch (error) {
         return res.status(httpStatus.UNAUTHORIZED).send(error);
