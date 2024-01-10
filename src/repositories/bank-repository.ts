@@ -31,9 +31,7 @@ export async function getSummaryReportRepository(employeeId: number, yearMonth: 
     return await prisma.bankHours.findFirst({
         where: {
             employeeId,
-            month: {
-                equals: yearMonth,
-            },
+            month: yearMonth,
         },
     });
 }

@@ -5,14 +5,14 @@ import { calculateFullBalance, calculateMonthHoursService } from "./hours-servic
 
 export async function getTodayHoursService(employeeId:number, day: string): Promise <SummaryReport> {
     const today = new Date(day);
-    const yearMonth = `${new Date().getFullYear()}-${new Date().getMonth() + 1}`;
+    const yearMonth = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}`;
     const lastMonth = calculateLastMonthString(yearMonth);
 
     const hours = await getTodayHoursByEmployeeRepository(employeeId, today);
     const summary = await getSummaryReportRepository(employeeId,yearMonth);
     const lastMonthFullBalance = await getSummaryReportMonthRepository(employeeId,lastMonth); //fullBalance mês anterior
 
-    const response = {hourControls: hours, bankHours: summary, bankBalanceLastMonth: lastMonthFullBalance}
+    const response = {hourControls: hours, bankHours: summary, bankBalanceLastMonth: lastMonthFullBalance};
     return response;
 }
 
@@ -60,7 +60,7 @@ export function calculateLastMonthString(yearMonth: string) {
         const yearLastMonth = `${year-1}-12`;
         return yearLastMonth;
     } else {
-        const yearLastMonth = `${year}-${month-1}`;
+        const yearLastMonth = `${year}-${String(month-1).padStart(2, '0')}`;
         return yearLastMonth;
     }
 }
