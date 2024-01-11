@@ -17,8 +17,8 @@ export async function createUser(params: Partial<User> = {}): Promise<User> {
     });
 }
 
-export function generateValidUserBody(){
-    const username = faker.internet.userName();
+export function generateValidUserBody(params: Partial<User> = {}){
+    const username = params.username || faker.internet.userName();
     const name = faker.name.findName();
     const password =  faker.internet.password(6);
     return {username, name, password};

@@ -56,6 +56,15 @@ describe("POST /users", () => {
         
             expect(response.status).toBe(httpStatus.BAD_REQUEST);
         });
+        it("should respond with status 400 when token and body are valid but has already another user with the same username", async () => {
+            const user = await createUser(); //que vai criar um novo
+            const token = await generateValidToken(user);
+            const user2 = await createUser();
+            const body = generateValidUserBody({username: user2.username});
+            const response = await server.post("/users").set("Authorization", `Bearer ${token}`).send(body);
+        
+            expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+        });
         it("should respond with status 200 when token and body are valid", async () => {
             const user = await createUser();
             const token = await generateValidToken(user);
