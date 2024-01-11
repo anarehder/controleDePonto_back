@@ -16,10 +16,14 @@ export async function getTodayHoursService(employeeId:number, day: string): Prom
     return response;
 }
 
-export async function getMonthHoursService(employeeId:number, month: string) {
-    const { startDate, endDate } = getStartEndDate(month);
-    const completeReport = await getMonthHoursByEmployeeRepository(employeeId, startDate, endDate);
-    return completeReport;
+export async function getMonthHoursService(employeeId:number, yearMonth: string) {
+    const { startDate, endDate } = getStartEndDate(yearMonth);
+    const lastMonth = calculateLastMonthString(yearMonth);
+    const completeReport = await getMonthHoursByEmployeeRepository(employeeId, startDate, endDate); // todas as horas do mês atual
+    const summary = await getSummaryReportRepository(employeeId, yearMonth); // geral mês atual
+    const lastMonthFullBalance = await getSummaryReportMonthRepository(employeeId,lastMonth); //fullBalance mês anterior
+    const response = {hourControls: completeReport, bankHours: summary, bankBalanceLastMonth: lastMonthFullBalance};
+    return response;
 }
 
 export async function postBankHourService(employeeId: number, day: Date, time: Date, type: string) {
