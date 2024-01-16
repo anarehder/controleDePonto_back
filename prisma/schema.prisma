@@ -11,59 +11,59 @@ datasource db {
 }
 
 model User {
-  id               Int                @id @default(autoincrement())
-  name             String             @db.VarChar(255)
-  username         String             @unique @db.VarChar(255)
-  password         String             @db.VarChar(255)
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt
-  Session          Session[]
-  HourControl      HourControl[]
-  BankHours        BankHours[]
-  DataControl      DataControl[]
+  id                  Int                @id @default(autoincrement())
+  name                String             @db.VarChar(255)
+  username            String             @unique @db.VarChar(255)
+  password            String             @db.VarChar(255)
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt @default(now())
+  Session             Session[]
+  HourControl         HourControl[]
+  BankHours           BankHours[]
+  DataControl         DataControl[]
 }
 
 model Session {
-  id            Int      @id @default(autoincrement())
-  employeeId    Int
-  User          User     @relation(fields: [employeeId], references: [id])
-  token         String   @unique
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id                  Int                @id @default(autoincrement())
+  employeeId          Int
+  User                User               @relation(fields: [employeeId], references: [id])
+  token               String             @unique
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt @default(now())
 }
 
 model HourControl {
-  id               Int         @id @default(autoincrement())
-  employeeId       Int
-  User             User        @relation(fields: [employeeId], references: [id])
-  day              DateTime
-  entry_time       DateTime?
-  pause_time       DateTime?
-  return_time      DateTime?
-  exit_time        DateTime?
-  totalWorkedByDay DateTime   
-  createdAt        DateTime    @default(now())
-  updatedAt        DateTime    @updatedAt
+  id                  Int                @id @default(autoincrement())
+  employeeId          Int
+  User                User               @relation(fields: [employeeId], references: [id])
+  day                 DateTime
+  entry_time          DateTime?
+  pause_time          DateTime?
+  return_time         DateTime?
+  exit_time           DateTime?
+  totalWorkedByDay    DateTime   
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt @default(now())
 }
 
 model BankHours {
-  id                  Int      @id @default(autoincrement())
+  id                  Int                @id @default(autoincrement())
   employeeId          Int
-  User                User     @relation(fields: [employeeId], references: [id])
+  User                User               @relation(fields: [employeeId], references: [id])
   month               String
   workedHoursByMonth  String
   totalHoursByMonth   String 
   hoursBankBalance    String 
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt @default(now())
 }
 
 model DataControl {
-  id               Int        @id @default(autoincrement())
-  employeeId       Int
-  User             User       @relation(fields: [employeeId], references: [id])
-  tableChanged     String
-  typeOfChange     String
-  createdAt        DateTime   @default(now())
-  updatedAt        DateTime   @updatedAt
+  id                  Int                @id @default(autoincrement())
+  employeeId          Int
+  User                User               @relation(fields: [employeeId], references: [id])
+  tableChanged        String
+  typeOfChange        String
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt @default(now())
 }

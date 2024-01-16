@@ -5,7 +5,7 @@ CREATE TABLE `User` (
     `username` VARCHAR(255) NOT NULL,
     `password` VARCHAR(255) NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `updatedAt` DATETIME(3) NOT NULL,
+    `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     UNIQUE INDEX `User_username_key`(`username`),
     PRIMARY KEY (`id`)
@@ -17,8 +17,9 @@ CREATE TABLE `Session` (
     `employeeId` INTEGER NOT NULL,
     `token` VARCHAR(191) NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `updatedAt` DATETIME(3) NOT NULL,
+    `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
+    UNIQUE INDEX `Session_token_key`(`token`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -26,14 +27,14 @@ CREATE TABLE `Session` (
 CREATE TABLE `HourControl` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `employeeId` INTEGER NOT NULL,
-    `day` VARCHAR(191) NOT NULL,
+    `day` DATETIME(3) NOT NULL,
     `entry_time` DATETIME(3) NULL,
     `pause_time` DATETIME(3) NULL,
     `return_time` DATETIME(3) NULL,
     `exit_time` DATETIME(3) NULL,
     `totalWorkedByDay` DATETIME(3) NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `updatedAt` DATETIME(3) NOT NULL,
+    `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -47,7 +48,7 @@ CREATE TABLE `BankHours` (
     `totalHoursByMonth` VARCHAR(191) NOT NULL,
     `hoursBankBalance` VARCHAR(191) NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `updatedAt` DATETIME(3) NOT NULL,
+    `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -59,7 +60,7 @@ CREATE TABLE `DataControl` (
     `tableChanged` VARCHAR(191) NOT NULL,
     `typeOfChange` VARCHAR(191) NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `updatedAt` DATETIME(3) NOT NULL,
+    `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
