@@ -20,7 +20,8 @@
     "dev:migration:run": "npm run dev:load-envs prisma migrate deploy",
     "dev:migration:generate": "npm run dev:load-envs prisma migrate dev",
     "dev:seed": "npm run dev:load-envs prisma db seed",
-    "dev:seed2": "npm run dev:load-envs ts-node prisma/seed.ts"
+    "dev:seed2": "npm run dev:load-envs ts-node prisma/seed.ts",
+    "seed": "npm run ts-node prisma/seed.ts"
   },
   "author": "",
   "license": "ISC",
