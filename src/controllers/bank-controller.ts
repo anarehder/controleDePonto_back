@@ -1,6 +1,6 @@
-import { AuthenticatedRequest } from "@/middlewares";
-import { GetUserReportInput, NewRegistryInput } from "@/protocols";
-import { updateBankHours, getMonthHoursService, getTodayHoursService, postBankHourService } from "@/services";
+import { AuthenticatedRequest } from "../middlewares";
+import { GetUserReportInput, NewRegistryInput } from "../protocols";
+import { updateBankHours, getMonthHoursService, getTodayHoursService, postBankHourService } from "../services";
 import { Response } from "express";
 import httpStatus from "http-status";
 

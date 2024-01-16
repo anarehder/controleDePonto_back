@@ -1,6 +1,6 @@
-import { invalidCredentialsError } from "@/errors";
-import { EmployeeLogin, LoginParams } from "@/protocols";
-import { createSessionRepository, deleteSessionRepository, getUsersByUsernameRepository } from "@/repositories";
+import { invalidCredentialsError } from "../errors";
+import { EmployeeLogin } from "../protocols";
+import { createSessionRepository, deleteSessionRepository, getUsersByUsernameRepository } from "../repositories";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 

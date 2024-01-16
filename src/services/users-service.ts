@@ -1,7 +1,6 @@
-import { conflictError } from "@/errors";
-import { EmployeeReturn } from "@/protocols";
-import { createUserRepository, getUsersByUsernameRepository, getUsersListRepository } from "@/repositories";
-import { User } from "@prisma/client";
+import { conflictError } from "../errors";
+import { EmployeeReturn } from "../protocols";
+import { createUserRepository, getUsersByUsernameRepository, getUsersListRepository } from "../repositories";
 import bcrypt from "bcrypt";
 
 export async function createUserService(name: string, username: string, password: string): Promise<EmployeeReturn> {

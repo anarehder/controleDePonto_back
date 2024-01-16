@@ -1,5 +1,5 @@
-import { prisma } from "@/config";
-import { MonthBalance, MonthTotalHours, NewBankHoursRegistry, NewRegistry, TotalWorkedHoursByMonth, UpdateBankHoursRegistry, UpdateRegistry } from "@/protocols";
+import { prisma } from "../config";
+import { MonthBalance, MonthTotalHours, NewBankHoursRegistry, NewRegistry, TotalWorkedHoursByMonth, UpdateBankHoursRegistry, UpdateRegistry } from "../protocols";
 import { BankHours, HourControl } from "@prisma/client";
 
 export async function getTodayHoursByEmployeeRepository(employeeId: number, day: Date): Promise<HourControl | null> {

@@ -1,5 +1,5 @@
-import { EmployeeReturn, NewUserInput } from "@/protocols";
-import { createUserService, getUsersService } from "@/services";
+import { EmployeeReturn, NewUserInput } from "../protocols";
+import { createUserService, getUsersService } from "../services";
 import { Request, Response } from "express";
 import httpStatus from "http-status";
 

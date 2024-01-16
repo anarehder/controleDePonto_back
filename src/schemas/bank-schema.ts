@@ -1,4 +1,4 @@
-import { NewRegistryInput } from "@/protocols";
+import { NewRegistryInput } from "../protocols";
 import Joi from "joi";
 
 export const addRegistrySchema = Joi.object<NewRegistryInput>({

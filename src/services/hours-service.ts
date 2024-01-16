@@ -1,5 +1,5 @@
-import { TotalWorkedHoursByMonth } from "@/protocols";
-import { getMonthWorkedHoursByEmployeeRespository, getSummaryReportMonthRepository } from "@/repositories";
+import { TotalWorkedHoursByMonth } from "../protocols";
+import { getMonthWorkedHoursByEmployeeRespository, getSummaryReportMonthRepository } from "../repositories";
 import { calculateLastMonthString } from "./bank-service";
 
 export async function calculateMonthHoursService (employeeId: number, startDate: Date, endDate: Date, yearMonth: string){

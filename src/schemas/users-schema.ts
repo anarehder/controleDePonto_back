@@ -1,4 +1,4 @@
-import { NewUserInput } from "@/protocols";
+import { NewUserInput } from "../protocols";
 import Joi from "joi";
 
 export const createUserSchema = Joi.object<NewUserInput>({

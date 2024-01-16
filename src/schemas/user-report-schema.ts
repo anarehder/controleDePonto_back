@@ -1,4 +1,4 @@
-import { GetUserReportInput } from "@/protocols";
+import { GetUserReportInput } from "../protocols";
 import Joi from "joi";
 
 export const getUserReportSchema = Joi.object<GetUserReportInput>({

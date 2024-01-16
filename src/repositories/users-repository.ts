@@ -1,5 +1,5 @@
-import { prisma } from "@/config";
-import { NewUserInput } from "@/protocols";
+import { prisma } from "../config";
+import { NewUserInput } from "../protocols";
 import { User } from "@prisma/client";
 
 

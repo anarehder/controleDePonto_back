@@ -1,7 +1,7 @@
-import { getMonthHoursController, getTodayHoursController, getUserReportController, postBankHourController } from "@/controllers";
-import { authenticateToken, validateBody } from "@/middlewares";
-import { addRegistrySchema } from "@/schemas";
-import { getUserReportSchema } from "@/schemas/user-report-schema";
+import { getMonthHoursController, getTodayHoursController, getUserReportController, postBankHourController } from "../controllers";
+import { authenticateToken, validateBody } from "../middlewares";
+import { addRegistrySchema } from "../schemas";
+import { getUserReportSchema } from "../schemas/user-report-schema";
 import { Router } from "express";
 
 const bankRouter = Router();
