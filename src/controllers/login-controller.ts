@@ -9,6 +9,7 @@ export async function loginController(req: Request, res: Response) {
         const loginReturn = await loginService(username, password);
         return res.status(httpStatus.OK).send(loginReturn);
     } catch (error) {
+        alert("Erro na solicitação, tente novamente!");
         return res.status(httpStatus.UNAUTHORIZED).send(error);
     }
 }
