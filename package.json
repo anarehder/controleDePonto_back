@@ -8,6 +8,7 @@
     "build": "tsc -p tsconfig.build.json",
     "start": "node dist/server.js",
     "dev": "cross-env NODE_ENV=development nodemon --watch 'src/' --exec 'ts-node -r tsconfig-paths/register ./src/server.ts' -e ts",
+    "prod": "cross-env NODE_ENV=prod nodemon --watch 'src/' --exec 'ts-node -r tsconfig-paths/register ./src/server.ts' -e ts",
     "migration:run": "prisma migrate deploy",
     "migration:generate": "npm run dev:load-envs prisma migrate dev",
     "test": "cross-env NODE_ENV=test jest --passWithNoTests --runInBand",
@@ -21,7 +22,8 @@
     "dev:migration:generate": "npm run dev:load-envs prisma migrate dev",
     "dev:seed": "npm run dev:load-envs prisma db seed",
     "dev:seed2": "npm run dev:load-envs ts-node prisma/seed.ts",
-    "seed": "npm run ts-node prisma/seed.ts"
+    "prod:load-envs": "dotenv -e .env",
+    "prod:seed": "npm run prod:load-envs ts-node prisma/seed.ts"
   },
   "author": "",
   "license": "ISC",
