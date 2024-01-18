@@ -7,7 +7,7 @@ import * as jwt from "jsonwebtoken";
 import { createUser } from "../factories/user-factory";
 import { insertHour } from "../factories/bank-factory";
 import { empty } from "@prisma/client/runtime/library";
-import { date, number } from "joi";
+import { date, number, string } from "joi";
 
 beforeAll(async () => {
     await init();
@@ -74,36 +74,34 @@ describe("GET /bank/today/:today", () => {
                 }),
             )
         });
-        // it("should respond with status 200 and today posted hour when token and param are valid", async () => {
-        //     // nesse caso não adicionei nenhuma hora ainda
-        //     const user = await createUser();
-        //     const token = await generateValidToken(user);
-        //     const teste = await insertHour(formattedToday, "08:00:00", "entry_time", user.id);
-        //     console.log(teste);
-        //     const response = await server.get(`/bank/today/${formattedToday}`).set("Authorization", `Bearer ${token}`);
+        it("should respond with status 200 and today posted hour when token and param are valid", async () => {
+            const user = await createUser();
+            const token = await generateValidToken(user);
+            await insertHour(formattedToday, "08:00:00", "entry_time", user.id);
+            const response = await server.get(`/bank/today/${formattedToday}`).set("Authorization", `Bearer ${token}`);
         
-        //     expect(response.status).toBe(httpStatus.OK);
-        //     expect(response.body).toEqual(
-        //         expect.objectContaining({
-        //             hourControls: expect.objectContaining({
-        //                 "id": expect.any(Number),
-        //                 "employeeId": user.id,
-        //                 "day": `${formattedToday}T00:00:00.000Z`,
-        //                 "entry_time": `${formattedToday}T08:00:00.000Z`,
-        //                 "pause_time": null,
-        //                 "return_time": null,
-        //                 "exit_time": null,
-        //                 "totalWorkedByDay": `${formattedToday}T00:00:00.000Z`,
-        //                 "createdAt": expect.any(Date),
-        //                 "updatedAt": expect.any(Date),
-        //             }),
-        //             bankHours: null,
-        //             bankBalanceLastMonth: expect.objectContaining({
-        //                 hoursBankBalance: "00:00"
-        //             }),
-        //         }),
-        //     )
-        // });
+            expect(response.status).toBe(httpStatus.OK);
+            expect(response.body).toStrictEqual(
+                expect.objectContaining({
+                    hourControls: expect.objectContaining({
+                        "id": expect.any(Number),
+                        "employeeId": user.id,
+                        "day": `${formattedToday}T00:00:00.000Z`,
+                        "entry_time": `${formattedToday}T08:00:00.000Z`,
+                        "pause_time": null,
+                        "return_time": null,
+                        "exit_time": null,
+                        "totalWorkedByDay": `${formattedToday}T00:00:00.000Z`,
+                        "createdAt": expect.any(String),
+                        "updatedAt": expect.any(String),
+                    }),
+                    bankHours: null,
+                    bankBalanceLastMonth: expect.objectContaining({
+                        hoursBankBalance: "00:00"
+                    }),
+                }),
+            )
+        });
     })
 })
 // pegar informações do mês desejado - rota autenticada - preciso do token (não tem body)
@@ -148,18 +146,32 @@ describe("GET /bank/month/:month", () => {
         it("should respond with status 200 when token and param are valid", async () => {
             // nesse caso não adicionei nenhuma hora ainda
             const user = await createUser();
-            const token = await generateValidToken(user);
-            const response = await server.get(`/bank/month/${yearMonth}`).set("Authorization", `Bearer ${token}`);
+            const newToken = await generateValidToken(user);
+            const response = await server.get(`/bank/month/${yearMonth}`).set("Authorization", `Bearer ${newToken}`);
         
             expect(response.status).toBe(httpStatus.OK);
+            console.log(response.body);
             expect(response.body).toEqual(
-                expect.objectContaining({
-                    hourControls: [],
-                    bankHours: null,
-                    bankBalanceLastMonth: expect.objectContaining({
+                {
+                    bankBalanceLastMonth: {
                         hoursBankBalance: "00:00"
-                    }),
-                }),
+                    },
+                    bankHours: null,
+                    hourControls: [
+                        {
+                            "id": expect.any(Number),
+                            "employeeId": expect.any(Number),
+                            "day": expect.any(String),
+                            "entry_time": expect.any(String),
+                            "pause_time": null,
+                            "return_time": null,
+                            "exit_time": null,
+                            "totalWorkedByDay": expect.any(String),
+                            "createdAt": expect.any(String),
+                            "updatedAt": expect.any(String),
+                        }
+                    ],                    
+                },
             )
         });
     })
