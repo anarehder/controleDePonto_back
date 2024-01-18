@@ -10,11 +10,7 @@ loadEnv();
 
 const app = express();
 app
-  .use(cors({
-    origin: 'http://127.0.0.1:5173', // ou o endereço do seu frontend
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true, // Permite o envio de cookies de autenticação
-  }))
+  .use(cors())
   .use(express.json())
   .get("/health", (_req, res) => res.send("OK!"))
   .use("/users", usersRouter)
