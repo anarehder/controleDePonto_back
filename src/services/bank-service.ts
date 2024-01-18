@@ -1,4 +1,4 @@
-import { invalidParamError } from "../errors";
+import { conflictError, invalidParamError } from "../errors";
 import { NewBankHoursRegistry, PostHoursCompleteReturn, SummaryReport, UpdateBankHoursRegistry } from "../protocols";
 import { getMonthHoursByEmployeeRepository, getSummaryReportRepository, getSummaryReportMonthRepository, getTodayHoursByEmployeeRepository, postBankControlRepository, updateBankControlRepository, updateTotalWorkedByDayRepository, getBankHoursRepository, updateBankHoursRepository, postBankHoursRepository, getSummaryReportHoursByMonthRepository } from "../repositories";
 import { calculateFullBalance, calculateMonthHoursService } from "./hours-service";
@@ -34,6 +34,17 @@ export async function postBankHourService(employeeId: number, day: Date, time: D
     if (registryExists) {
         const formattedTime = `${day}T${time}Z`
         const data = {employeeId, day: new Date(day), [type]: new Date(formattedTime)};
+        //fazer a verificação
+        if (type === "pause_time" && registryExists.entry_time){
+            if (new Date(registryExists.entry_time) > new Date(formattedTime)){
+                throw conflictError("incompatible hours");
+            }
+        }
+        if (type === "exit_time" && registryExists.return_time){
+            if (new Date(registryExists.return_time) > new Date(formattedTime)){
+                throw conflictError("incompatible hours");
+            }
+        }
         const hours = await updateBankControlRepository(registryExists.id, data);
         return hours;
     } else {
