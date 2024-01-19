@@ -32,7 +32,7 @@ describe("POST /bank", () => {
         });
         it("should respond with status 401 if there is no session for given token", async () => {
             const userWithoutSession = await createUser();
-            const token = jwt.sign({ userId: userWithoutSession.id }, process.env.JWT_SECRET);
+            const token = jwt.sign({ employeeId: userWithoutSession.id }, process.env.JWT_SECRET);
             const response = await server.post(`/bank`).set("Authorization", `Bearer ${token}`);
 
             expect(response.status).toBe(httpStatus.UNAUTHORIZED);
@@ -96,7 +96,7 @@ describe("POST /userreport", () => {
         });
         it("should respond with status 401 if there is no session for given token", async () => {
             const userWithoutSession = await createUser();
-            const token = jwt.sign({ userId: userWithoutSession.id }, process.env.JWT_SECRET);
+            const token = jwt.sign({ employeeId: userWithoutSession.id }, process.env.JWT_SECRET);
             const response = await server.post(`/bank/userreport`).set("Authorization", `Bearer ${token}`);
 
             expect(response.status).toBe(httpStatus.UNAUTHORIZED);

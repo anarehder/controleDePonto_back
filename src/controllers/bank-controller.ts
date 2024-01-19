@@ -28,7 +28,8 @@ export async function getMonthHoursController (req: AuthenticatedRequest, res: R
 }
 
 export async function postBankHourController (req: AuthenticatedRequest, res: Response) {
-    const { employeeId } = req;
+    const employeeId = req.employeeId;
+    console.log(employeeId);
     const { day, time, type } = req.body as NewRegistryInput;
     try {
         const hours = await postBankHourService(employeeId, day, time, type);

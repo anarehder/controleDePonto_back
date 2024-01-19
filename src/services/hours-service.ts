@@ -3,6 +3,7 @@ import { getMonthWorkedHoursByEmployeeRespository, getSummaryReportMonthReposito
 import { calculateLastMonthString } from "./bank-service";
 
 export async function calculateMonthHoursService (employeeId: number, startDate: Date, endDate: Date, yearMonth: string){
+    console.log(employeeId);
     // pegar por funcionário a somatória de horas trabalhadas por dia agrupadas em totalWorkedSeconds; 
     const monthAmountWorkedSeconds = await getMonthWorkedHoursByEmployeeRespository(employeeId, startDate, endDate); 
     //transformo o total em horas trabalhadas
