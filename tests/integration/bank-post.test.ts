@@ -78,47 +78,47 @@ describe("POST /bank", () => {
                 }),
             )
         });
-        // it("should respond with status 200 and full response when token and body are valid and a complete registry is done", async () => {
-        //     // nesse caso adicionei apenas o horario de entrada como 08:00
-        //     const user = await createUser();
-        //     const token = await generateValidToken(user);
-        //     const body1 = {day: "2024-01-01", time: "08:00", type:"entry_time"};
-        //     await server.post("/bank").set("Authorization", `Bearer ${token}`).send(body1);
-        //     const body2 = {day: "2024-01-01", time: "12:00", type:"pause_time"};
-        //     await server.post("/bank").set("Authorization", `Bearer ${token}`).send(body2);
-        //     const body3 = {day: "2024-01-01", time: "14:00", type:"return_time"};
-        //     await server.post("/bank").set("Authorization", `Bearer ${token}`).send(body3);
-        //     const body4 = {day: "2024-01-01", time: "18:00", type:"exit_time"};
-        //     const response = await server.post("/bank").set("Authorization", `Bearer ${token}`).send(body4);
-        //     console.log(response.body);
-        //     expect(response.status).toBe(httpStatus.OK);
-        //     expect(response.body).toEqual(
-        //         expect.objectContaining({
-        //             workedTodayAmount: expect.objectContaining({
-        //                 "id": expect.any(Number),
-        //                 "employeeId": user.id,
-        //                 "day": "2024-01-01T00:00:00.000Z",
-        //                 "entry_time": "2024-01-01T08:00:00.000Z",
-        //                 "pause_time": "2024-01-01T12:00:00.000Z",
-        //                 "return_time": "2024-01-01T14:00:00.000Z",
-        //                 "exit_time": "2024-01-01T18:00:00.000Z",
-        //                 "totalWorkedByDay": "2024-01-01T08:00:00.000Z",
-        //                 "createdAt": expect.any(String),
-        //                 "updatedAt": expect.any(String),
-        //             }),
-        //             bankHours: expect.objectContaining({
-        //                 "id": expect.any(Number),
-        //                 "employeeId": user.id,
-        //                 "month": "2024-01",
-        //                 "workedHoursByMonth": "08:00",
-        //                 "totalHoursByMonth": "-168:00",
-        //                 "hoursBankBalance": "-168:00",
-        //                 "createdAt": expect.any(String),
-        //                 "updatedAt": expect.any(String),
-        //             })
-        //         })
-        //     )
-        // });
+        it("should respond with status 200 and full response when token and body are valid and a complete registry is done", async () => {
+            // nesse caso adicionei apenas o horario de entrada como 08:00
+            const user = await createUser();
+            const token = await generateValidToken(user);
+            const body1 = {day: "2024-01-01", time: "08:00", type:"entry_time"};
+            await server.post("/bank").set("Authorization", `Bearer ${token}`).send(body1);
+            const body2 = {day: "2024-01-01", time: "12:00", type:"pause_time"};
+            await server.post("/bank").set("Authorization", `Bearer ${token}`).send(body2);
+            const body3 = {day: "2024-01-01", time: "14:00", type:"return_time"};
+            await server.post("/bank").set("Authorization", `Bearer ${token}`).send(body3);
+            const body4 = {day: "2024-01-01", time: "18:00", type:"exit_time"};
+            const response = await server.post("/bank").set("Authorization", `Bearer ${token}`).send(body4);
+            
+            expect(response.status).toBe(httpStatus.OK);
+            expect(response.body).toEqual(
+                expect.objectContaining({
+                    workedTodayAmount: expect.objectContaining({
+                        "id": expect.any(Number),
+                        "employeeId": user.id,
+                        "day": "2024-01-01T00:00:00.000Z",
+                        "entry_time": "2024-01-01T08:00:00.000Z",
+                        "pause_time": "2024-01-01T12:00:00.000Z",
+                        "return_time": "2024-01-01T14:00:00.000Z",
+                        "exit_time": "2024-01-01T18:00:00.000Z",
+                        "totalWorkedByDay": "2024-01-01T08:00:00.000Z",
+                        "createdAt": expect.any(String),
+                        "updatedAt": expect.any(String),
+                    }),
+                    bankHours: expect.objectContaining({
+                        "id": expect.any(Number),
+                        "employeeId": user.id,
+                        "month": "2024-01",
+                        "workedHoursByMonth": "08:00",
+                        "totalHoursByMonth": "-168:00",
+                        "hoursBankBalance": "-168:00",
+                        "createdAt": expect.any(String),
+                        "updatedAt": expect.any(String),
+                    })
+                })
+            )
+        });
     })
 })
 
