@@ -33,7 +33,9 @@ export async function postBankHourController (req: AuthenticatedRequest, res: Re
     const { day, time, type } = req.body as NewRegistryInput;
     try {
         const hours = await postBankHourService(employeeId, day, time, type);
-        if (hours.entry_time && hours.pause_time && hours.return_time && hours.exit_time) {
+        const fullRegistry = hours.entry_time && hours.pause_time && hours.return_time && hours.exit_time;
+        console.log(fullRegistry);
+        if (fullRegistry) {
             const response = await updateBankHours(hours.id, employeeId, day);
             console.log(response);
             return res.status(httpStatus.OK).send(response);
