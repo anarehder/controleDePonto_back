@@ -6,8 +6,6 @@ import faker from "@faker-js/faker";
 import * as jwt from "jsonwebtoken";
 import { createUser } from "../factories/user-factory";
 import { insertHour, updateHour } from "../factories/bank-factory";
-import { empty } from "@prisma/client/runtime/library";
-import { any, date, number, string } from "joi";
 
 beforeAll(async () => {
     await init();

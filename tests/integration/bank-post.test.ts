@@ -5,7 +5,7 @@ import httpStatus from "http-status";
 import faker from "@faker-js/faker";
 import * as jwt from "jsonwebtoken";
 import { createUser } from "../factories/user-factory";
-import { generateValidBankBody } from "../factories/bank-factory";
+import { generateValidBankBody, insertHour, updateHour } from "../factories/bank-factory";
 
 beforeAll(async () => {
     await init();
@@ -13,8 +13,8 @@ beforeAll(async () => {
 });
 
 const server = supertest(app);
-// const today = new Date();
-// const formattedToday = `${today.getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}-${String(new Date().getDate()).padStart(2, '0')}`
+const today = new Date();
+const formattedToday = `${today.getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}-${String(new Date().getDate()).padStart(2, '0')}`
 // const yearMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
 // enviar um horário de ponto - rota autenticada - preciso do token (primeiro avaliar o token depois o body)
 describe("POST /bank", () => {
@@ -55,27 +55,68 @@ describe("POST /bank", () => {
         
             expect(response.status).toBe(httpStatus.BAD_REQUEST);
         });
-        // it("should respond with status 200 when token and body are valid", async () => {
+        it("should respond with status 200 when token and body are valid", async () => {
+            // nesse caso adicionei apenas o horario de entrada como 08:00
+            const user = await createUser();
+            const token = await generateValidToken(user);
+            const body = {day: "2024-01-01", time: "08:00", type:"entry_time"};
+            const response = await server.post("/bank").set("Authorization", `Bearer ${token}`).send(body);
+
+            expect(response.status).toBe(httpStatus.OK);
+            expect(response.body).toEqual(
+                expect.objectContaining({
+                    createdAt: expect.any(String),
+                    id: expect.any(Number),
+                    employeeId: user.id,
+                    day: `${body.day}T00:00:00.000Z`,
+                    entry_time: `${body.day}T${body.time}:00.000Z`,
+                    pause_time: null,
+                    return_time: null,
+                    exit_time: null,
+                    totalWorkedByDay: `${body.day}T00:00:00.000Z`,
+                    updatedAt: expect.any(String),
+                }),
+            )
+        });
+        // it("should respond with status 200 and full response when token and body are valid and a complete registry is done", async () => {
         //     // nesse caso adicionei apenas o horario de entrada como 08:00
         //     const user = await createUser();
         //     const token = await generateValidToken(user);
-        //     const body = generateValidBankBody();
-        //     const response = await server.post("/bank").set("Authorization", `Bearer ${token}`).send(body);
-
+        //     const body1 = {day: "2024-01-01", time: "08:00", type:"entry_time"};
+        //     await server.post("/bank").set("Authorization", `Bearer ${token}`).send(body1);
+        //     const body2 = {day: "2024-01-01", time: "12:00", type:"pause_time"};
+        //     await server.post("/bank").set("Authorization", `Bearer ${token}`).send(body2);
+        //     const body3 = {day: "2024-01-01", time: "14:00", type:"return_time"};
+        //     await server.post("/bank").set("Authorization", `Bearer ${token}`).send(body3);
+        //     const body4 = {day: "2024-01-01", time: "18:00", type:"exit_time"};
+        //     const response = await server.post("/bank").set("Authorization", `Bearer ${token}`).send(body4);
+        //     console.log(response.body);
         //     expect(response.status).toBe(httpStatus.OK);
         //     expect(response.body).toEqual(
         //         expect.objectContaining({
-        //             hourControls: expect.objectContaining({
-        //                 id: expect.any(Number),
-        //                 employeeId: user.id,
-        //                 day: `${body.day}T00:00:00.000Z`,
-        //                 entry_time: `${body.day}T${body.time}.000Z`,
-        //                 pause_time: null,
-        //                 return_time: null,
-        //                 exit_time: null,
-        //                 totalWorkedByDay: `${body.day}T00:00:00.000Z`,
+        //             workedTodayAmount: expect.objectContaining({
+        //                 "id": expect.any(Number),
+        //                 "employeeId": user.id,
+        //                 "day": "2024-01-01T00:00:00.000Z",
+        //                 "entry_time": "2024-01-01T08:00:00.000Z",
+        //                 "pause_time": "2024-01-01T12:00:00.000Z",
+        //                 "return_time": "2024-01-01T14:00:00.000Z",
+        //                 "exit_time": "2024-01-01T18:00:00.000Z",
+        //                 "totalWorkedByDay": "2024-01-01T08:00:00.000Z",
+        //                 "createdAt": expect.any(String),
+        //                 "updatedAt": expect.any(String),
         //             }),
-        //         }),
+        //             bankHours: expect.objectContaining({
+        //                 "id": expect.any(Number),
+        //                 "employeeId": user.id,
+        //                 "month": "2024-01",
+        //                 "workedHoursByMonth": "08:00",
+        //                 "totalHoursByMonth": "-168:00",
+        //                 "hoursBankBalance": "-168:00",
+        //                 "createdAt": expect.any(String),
+        //                 "updatedAt": expect.any(String),
+        //             })
+        //         })
         //     )
         // });
     })
