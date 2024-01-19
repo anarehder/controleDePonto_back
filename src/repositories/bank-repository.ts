@@ -88,11 +88,11 @@ export async function updateTotalWorkedByDayRepository(id: number): Promise<Hour
         TIME_TO_SEC(TIMEDIFF(pause_time, entry_time)) + TIME_TO_SEC(TIMEDIFF(exit_time, return_time))
     )
     WHERE id = ${id}`;
-    console.log(result);
+
     const updatedData = await prisma.hourControl.findUnique({
         where: { id },
     });
-    console.log("update data", updatedData);
+
     const dia = updatedData.day.getUTCDate();
     const novaData = new Date(updatedData.totalWorkedByDay);
     novaData.setDate(dia);

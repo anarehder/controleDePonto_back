@@ -5,9 +5,9 @@ import httpStatus from "http-status";
 import faker from "@faker-js/faker";
 import * as jwt from "jsonwebtoken";
 import { createUser } from "../factories/user-factory";
-import { insertHour } from "../factories/bank-factory";
+import { insertHour, updateHour } from "../factories/bank-factory";
 import { empty } from "@prisma/client/runtime/library";
-import { date, number, string } from "joi";
+import { any, date, number, string } from "joi";
 
 beforeAll(async () => {
     await init();
@@ -152,26 +152,48 @@ describe("GET /bank/month/:month", () => {
             expect(response.status).toBe(httpStatus.OK);
             console.log(response.body);
             expect(response.body).toEqual(
-                {
+                expect.objectContaining({
                     bankBalanceLastMonth: {
                         hoursBankBalance: "00:00"
                     },
                     bankHours: null,
-                    hourControls: [
-                        {
-                            "id": expect.any(Number),
-                            "employeeId": expect.any(Number),
-                            "day": expect.any(String),
-                            "entry_time": expect.any(String),
-                            "pause_time": null,
-                            "return_time": null,
-                            "exit_time": null,
-                            "totalWorkedByDay": expect.any(String),
+                    hourControls: [],                    
+                }),
+            )
+        });
+        it("should respond with status 200 and some data when token and param are valid", async () => {
+            // nesse caso não adicionei nenhuma hora ainda
+            const user = await createUser();
+            const newToken = await generateValidToken(user);
+            const registry = await insertHour(formattedToday, "08:00", "entry_time", user.id );
+            await updateHour(registry.id, formattedToday, "12:00", "pause_time", user.id );
+            await updateHour(registry.id, formattedToday, "14:00", "return_time", user.id );
+            await updateHour(registry.id, formattedToday, "18:00", "exit_time", user.id );
+            const response = await server.get(`/bank/month/${yearMonth}`).set("Authorization", `Bearer ${newToken}`);
+        
+            expect(response.status).toBe(httpStatus.OK);
+            console.log(response.body);
+            expect(response.body).toEqual(
+                expect.objectContaining({
+                    bankBalanceLastMonth: {
+                        hoursBankBalance: "00:00"
+                    },
+                    bankHours: null,
+                    hourControls: expect.arrayContaining([
+                        expect.objectContaining({
                             "createdAt": expect.any(String),
+                            "day": `${formattedToday}T00:00:00.000Z`,
+                            "employeeId": user.id,
+                            "entry_time": `${formattedToday}T08:00:00.000Z`,
+                            "exit_time": `${formattedToday}T18:00:00.000Z`,
+                            "id": expect.any(Number),
+                            "pause_time": `${formattedToday}T12:00:00.000Z`,
+                            "return_time": `${formattedToday}T14:00:00.000Z`,
+                            "totalWorkedByDay": expect.any(String),
                             "updatedAt": expect.any(String),
-                        }
-                    ],                    
-                },
+                        })
+                    ]),                    
+                }),
             )
         });
     })

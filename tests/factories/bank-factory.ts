@@ -17,3 +17,15 @@ export async function insertHour(day: string, time: string, type: string, employ
         data
     });
 }
+
+export async function updateHour(registryId: number, day: string, time: string, type: string, employeeId: number): Promise<HourControl> {
+
+    const data = {employeeId, day: new Date(day), [type]: new Date(`${day}T${time}Z`), totalWorkedByDay: new Date(`${day}T00:00:00Z`)};
+
+    return await prisma.hourControl.update({
+        where: {
+            id: registryId,
+        },
+        data
+    });
+}

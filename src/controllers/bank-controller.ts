@@ -36,7 +36,6 @@ export async function postBankHourController (req: AuthenticatedRequest, res: Re
         const fullRegistry = (hours.entry_time !== null) && (hours.pause_time!== null) && (hours.return_time!== null) && (hours.exit_time!== null);
         if (fullRegistry) {
             const response = await updateBankHours(hours.id, employeeId, day);
-            console.log(response);
             return res.status(httpStatus.OK).send(response);
         }
         return res.status(httpStatus.OK).send(hours);
