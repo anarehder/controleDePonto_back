@@ -1,9 +1,9 @@
 import { ApplicationError } from "../protocols";
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import httpStatus from "http-status";
 
-export function handleApplicationErrors(err: ApplicationError | Error, _req: Request, res: Response) {
-    console.log(err);
+export function handleApplicationErrors(err: ApplicationError | Error, _req: Request, res: Response, next: NextFunction) {
+
     if (err.name === "CannotGetData") {
         return res.status(httpStatus.BAD_REQUEST).send({
             message: err.message,
@@ -38,5 +38,4 @@ export function handleApplicationErrors(err: ApplicationError | Error, _req: Req
         error: 'Not Found Route',
         message: 'Rota não encontrada',
     });
-
 }
