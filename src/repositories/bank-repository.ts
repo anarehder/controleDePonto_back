@@ -87,7 +87,7 @@ export async function updateTotalWorkedByDayRepository(id: number): Promise<Hour
     const result = await prisma.$queryRaw`
     UPDATE hourControl
     SET totalWorkedByDay = SEC_TO_TIME(
-        TIME_TO_SEC(TIMEDIFF(pause_time, entry_time)) + TIME_TO_SEC(TIMEDIFF(exit_time, return_time))
+        TIMESTAMPDIFF(SECOND, entry_time, pause_time) + TIMESTAMPDIFF(SECOND, return_time, exit_time)
     )
     WHERE id = ${+id}`;
 
