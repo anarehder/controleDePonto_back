@@ -82,6 +82,7 @@ export async function updateBankControlRepository(id: number, data: UpdateRegist
 }
 
 export async function updateTotalWorkedByDayRepository(id: number): Promise<HourControl> {
+    console.log("entrey no updateRepository");
     await prisma.$queryRaw`
     UPDATE hourControl
     SET totalWorkedByDay = SEC_TO_TIME(
@@ -92,7 +93,7 @@ export async function updateTotalWorkedByDayRepository(id: number): Promise<Hour
     const updatedData = await prisma.hourControl.findUnique({
         where: { id },
     });
-
+    console.log("update data", updatedData);
     const dia = updatedData.day.getUTCDate();
     const novaData = new Date(updatedData.totalWorkedByDay);
     novaData.setDate(dia);
