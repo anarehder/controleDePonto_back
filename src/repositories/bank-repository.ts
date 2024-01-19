@@ -98,7 +98,7 @@ export async function updateTotalWorkedByDayRepository(id: number): Promise<Hour
     novaData.setDate(dia);
 
     await prisma.$queryRaw`
-    UPDATE hourControl
+    UPDATE HourControl
     SET totalWorkedByDay = ${novaData}
     WHERE id = ${id}`;
 
