@@ -9,7 +9,9 @@ export async function loginController(req: Request, res: Response) {
         const loginReturn = await loginService(username, password);
         return res.status(httpStatus.OK).send(loginReturn);
     } catch (error) {
-        alert("Erro na solicitação, tente novamente!");
+        if (error.name === "invalidCredentialsError") {
+            return res.status(httpStatus.UNAUTHORIZED).send(error);
+        }
         return res.status(httpStatus.UNAUTHORIZED).send(error);
     }
 }
@@ -22,4 +24,8 @@ export async function logoutController(req: Request, res: Response) {
     } catch (error) {
         return res.status(httpStatus.UNAUTHORIZED).send(error);
     }
+}
+
+function next(customError: Error) {
+    throw new Error("Function not implemented.");
 }

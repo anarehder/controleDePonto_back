@@ -1,4 +1,4 @@
-import { invalidCredentialsError } from "../errors";
+import { invalidCredentialsError, unauthorizedError } from "../errors";
 import { EmployeeLogin } from "../protocols";
 import { createSessionRepository, deleteSessionRepository, getUsersByUsernameRepository } from "../repositories";
 import bcrypt from "bcrypt";
@@ -6,7 +6,9 @@ import jwt from "jsonwebtoken";
 
 export async function loginService(username: string, password: string): Promise<EmployeeLogin> {
     const employee = await getUsersByUsernameRepository(username);
-
+    if (!employee) {
+        throw invalidCredentialsError();
+    }
     await validatePassword(password, employee.password);
 
     const token = await createSession(employee.id);

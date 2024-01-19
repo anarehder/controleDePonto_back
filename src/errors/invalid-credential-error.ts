@@ -2,7 +2,7 @@ import { ApplicationError } from "../protocols";
 
 export function invalidCredentialsError(): ApplicationError {
   return {
-    name: "InvalidCredentialsError",
+    name: "invalidCredentialsError",
     message: "incorrect username or password",
   };
 }

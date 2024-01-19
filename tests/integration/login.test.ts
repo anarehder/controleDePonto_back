@@ -38,8 +38,8 @@ describe("POST /login", () => {
         });
         it("should respond with status 400 when body is valid but username is incorrect", async () => {
             const password = "senha123";
-            const user = await createUser({password});
-            const body = { username: faker.internet.userName(), password};
+            await createUser({password});
+            const body = { username: 'joaojose', password};
             const response = await server.post("/login").send(body);
         
             expect(response.status).toBe(httpStatus.UNAUTHORIZED);

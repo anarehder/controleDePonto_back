@@ -58,7 +58,7 @@ export async function postBankHourService(employeeId: number, day: Date, time: D
 export async function updateBankHours(id: number, employeeId: number, day:Date): Promise<PostHoursCompleteReturn> {
     //calculei e atualizei o total do dia (a query faz pra mim a soma?)
     const workedTodayAmount = await updateTotalWorkedByDayRepository(id);
-    console.log(employeeId);
+
     //atualizar o do mês que estou alterando
     const updatedDate = new Date(day);
     const yearMonth = `${updatedDate.getUTCFullYear()}-${(updatedDate.getUTCMonth() + 1).toString().padStart(2, '0')}`;
