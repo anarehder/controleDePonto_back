@@ -45,6 +45,7 @@ export async function postBankHourService(employeeId: number, day: Date, time: D
                 throw conflictError("incompatible hours");
             }
         }
+        console.log(data);
         const hours = await updateBankControlRepository(registryExists.id, data);
         return hours;
     } else {
