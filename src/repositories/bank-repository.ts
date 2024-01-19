@@ -82,15 +82,12 @@ export async function updateBankControlRepository(id: number, data: UpdateRegist
 }
 
 export async function updateTotalWorkedByDayRepository(id: number): Promise<HourControl> {
-    console.log("entrey no updateRepository", id);
-
     const result = await prisma.$queryRaw`
     UPDATE hourControl
     SET totalWorkedByDay = SEC_TO_TIME(
-        TIMESTAMPDIFF(SECOND, entry_time, pause_time) + TIMESTAMPDIFF(SECOND, return_time, exit_time)
+        TIME_TO_SEC(TIMEDIFF(pause_time, entry_time)) + TIME_TO_SEC(TIMEDIFF(exit_time, return_time))
     )
-    WHERE id = ${+id}`;
-
+    WHERE id = ${id}`;
     console.log(result);
     const updatedData = await prisma.hourControl.findUnique({
         where: { id },
