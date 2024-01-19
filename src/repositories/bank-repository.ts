@@ -90,7 +90,8 @@ export async function updateTotalWorkedByDayRepository(id: number): Promise<Hour
     )
     WHERE id = ${+id}`;
     console.log(query);
-    await query;
+    const teste = await query;
+    console.log(teste);
     const updatedData = await prisma.hourControl.findUnique({
         where: { id },
     });
