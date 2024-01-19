@@ -82,7 +82,7 @@ export async function updateBankControlRepository(id: number, data: UpdateRegist
 }
 
 export async function updateTotalWorkedByDayRepository(id: number): Promise<HourControl> {
-    const result = await prisma.$queryRaw`
+    await prisma.$queryRaw`
     UPDATE HourControl
     SET totalWorkedByDay = SEC_TO_TIME(
         TIME_TO_SEC(TIMEDIFF(pause_time, entry_time)) + TIME_TO_SEC(TIMEDIFF(exit_time, return_time))
