@@ -1,4 +1,3 @@
-import { conflictError } from "@/errors";
 import { prisma } from "../config";
 import { NewUserInput } from "../protocols";
 import { User } from "@prisma/client";
