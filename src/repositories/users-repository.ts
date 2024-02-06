@@ -29,3 +29,16 @@ export async function createUserRepository (data: NewUserInput): Promise <User> 
         data,
     });
 }
+
+export async function changePasswordRepository(employeeId: number, username: string, password: string): Promise <User | null> {
+    const user = prisma.user.update({
+        where: {
+            id: employeeId,
+            username: username,
+        },
+        data: {
+            password: password,
+        },
+    });
+    return user; 
+}

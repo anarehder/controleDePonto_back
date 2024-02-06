@@ -1,6 +1,6 @@
-import { conflictError } from "../errors";
+import { conflictError, notFoundError } from "../errors";
 import { EmployeeReturn } from "../protocols";
-import { createUserRepository, getUsersByUsernameRepository, getUsersListRepository } from "../repositories";
+import { changePasswordRepository, createUserRepository, getUsersByUsernameRepository, getUsersListRepository } from "../repositories";
 import bcrypt from "bcrypt";
 
 export async function createUserService(name: string, username: string, password: string): Promise<EmployeeReturn> {
@@ -27,4 +27,15 @@ export async function getUsersService(): Promise<EmployeeReturn[]> {
         username: user.username,
     }));
     return formattedUsers;
+}
+
+export async function changePasswordService(employeeId: number, username: string, password: string): Promise<EmployeeReturn> {
+    const user = await getUsersByUsernameRepository(username);
+    if (!user) {
+        throw notFoundError();
+    }
+    const hashedPassword = await bcrypt.hash(password, 12);
+    const newUser = await changePasswordRepository(employeeId, username, hashedPassword)
+    const newUserReturn: EmployeeReturn = {id: newUser.id, name: newUser.name, username: newUser.username};
+    return newUserReturn;
 }
