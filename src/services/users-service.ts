@@ -3,11 +3,11 @@ import { EmployeeReturn } from "../protocols";
 import { changePasswordRepository, createUserRepository, getUsersByUsernameRepository, getUsersListRepository } from "../repositories";
 import bcrypt from "bcrypt";
 
-export async function createUserService(name: string, username: string, password: string): Promise<EmployeeReturn> {
+export async function createUserService(employeeId: number, name: string, username: string, password: string): Promise<EmployeeReturn> {
     await validateUniqueUsername(username);
     const hashedPassword = await bcrypt.hash(password, 12);
     const data = {name, username, password: hashedPassword};
-    const newUser = await createUserRepository(data)
+    const newUser = await createUserRepository(employeeId, data)
     const newUserReturn: EmployeeReturn = {id: newUser.id, name: newUser.name, username: newUser.username};
     return newUserReturn;
 }
@@ -29,13 +29,11 @@ export async function getUsersService(): Promise<EmployeeReturn[]> {
     return formattedUsers;
 }
 
-export async function changePasswordService(employeeId: number, username: string, password: string): Promise<EmployeeReturn> {
+export async function changePasswordService(employeeId: number, username: string, password: string) {
     const user = await getUsersByUsernameRepository(username);
     if (!user) {
         throw notFoundError();
     }
     const hashedPassword = await bcrypt.hash(password, 12);
-    const newUser = await changePasswordRepository(employeeId, username, hashedPassword)
-    const newUserReturn: EmployeeReturn = {id: newUser.id, name: newUser.name, username: newUser.username};
-    return newUserReturn;
+    await changePasswordRepository(employeeId, username, hashedPassword, user)
 }

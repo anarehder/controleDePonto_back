@@ -4,10 +4,11 @@ import { changePasswordService, createUserService, getUsersService } from "../se
 import { Request, Response } from "express";
 import httpStatus from "http-status";
 
-export async function createUserController (req: Request, res: Response) {
+export async function createUserController (req: AuthenticatedRequest, res: Response) {
+    const employeeId = req.employeeId;
     const { name, username, password } = req.body as NewUserInput;
     try {
-        const newUser = await createUserService (name, username, password);
+        const newUser = await createUserService (employeeId, name, username, password);
         return res.status(httpStatus.OK).send(newUser);
     } catch (error) {
         return res.status(httpStatus.UNAUTHORIZED).send(error);
