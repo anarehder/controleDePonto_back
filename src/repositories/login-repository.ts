@@ -34,9 +34,10 @@ export async function deleteSessionRepository (token: string) {
     await prisma.logOperation.create({
         data: {
             employeeId: deleted.employeeId,
-            tableChanged: "user",
-            operation: "UPDATE",
+            tableChanged: "session",
+            operation: "DELETE",
             lastValue: JSON.stringify(session),
+            newValue: "null",
         }
     });
 

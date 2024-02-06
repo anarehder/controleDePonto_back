@@ -60,7 +60,7 @@ CREATE TABLE `LogOperation` (
     `tableChanged` VARCHAR(191) NOT NULL,
     `operation` VARCHAR(191) NOT NULL,
     `lastValue` VARCHAR(1000) NULL,
-    `newValue` VARCHAR(1000) NOT NULL,
+    `newValue` VARCHAR(1000) NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 

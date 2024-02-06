@@ -65,7 +65,7 @@ model LogOperation {
   tableChanged        String 
   operation           String
   lastValue           String?            @db.VarChar(1000)          
-  newValue            String             @db.VarChar(1000)
+  newValue            String?             @db.VarChar(1000)
   createdAt           DateTime           @default(now())
   updatedAt           DateTime           @updatedAt @default(now())
 }
