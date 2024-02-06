@@ -29,18 +29,18 @@ export async function getMonthHoursController (req: AuthenticatedRequest, res: R
 
 export async function postBankHourController (req: AuthenticatedRequest, res: Response) {
     const employeeId = req.employeeId;
-
     const { day, time, type } = req.body as NewRegistryInput;
+    
     const today = new Date();
     const dataLimite = new Date();
-    dataLimite.setDate(today.getDate() - 40);
+    dataLimite.setDate(today.getDate() - 10);
     const dataTeste = new Date(day);
     if (dataTeste < dataLimite){
-        return res.status(httpStatus.UNAUTHORIZED).send("Não é possível alterar/adicionar datas anteriores a 40 dias atrás");
+        return res.status(httpStatus.UNAUTHORIZED).send("Não é possível alterar/adicionar datas anteriores a 10 dias atrás");
     }
     try {
         const hours = await postBankHourService(employeeId, day, time, type);
-        const fullRegistry = (hours.entry_time !== null) && (hours.exit_time!== null);
+        const fullRegistry = (hours.entry_time !== null) && (hours.exit_time !== null);
         if (fullRegistry) {
             const response = await updateBankHours(hours.id, employeeId, day);
             return res.status(httpStatus.OK).send(response);

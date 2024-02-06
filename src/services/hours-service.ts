@@ -1,6 +1,6 @@
 import { TotalWorkedHoursByMonth } from "../protocols";
 import { getMonthWorkedHoursByEmployeeRespository, getSummaryReportMonthRepository } from "../repositories";
-import { calculateLastMonthString } from "./bank-service";
+import { getLastMonth } from "./bank-service";
 
 export async function calculateMonthHoursService (employeeId: number, startDate: Date, endDate: Date, yearMonth: string){
 
@@ -43,7 +43,7 @@ function calculateMonthTotalHours(monthAmountWorkedHours: string){
 
 
 export async function calculateFullBalance (employeeId: number, yearMonth: string, monthBalance: string){
-    const lastMonth = calculateLastMonthString(yearMonth);
+    const lastMonth = getLastMonth(yearMonth);
     //pegar o saldo geral do mês anterior (hoursBankBalance)
     const lastMonthFullBalance = await getSummaryReportMonthRepository(employeeId, lastMonth);//obter saldo mês anterior
     // faço a conta do saldo do mês que enviei a data

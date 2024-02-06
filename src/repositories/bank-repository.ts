@@ -84,12 +84,29 @@ export async function postBankControlRepository(data: NewRegistry): Promise<Hour
 }
 
 export async function updateBankControlRepository(id: number, data: UpdateRegistry): Promise<HourControl> {
-    return await prisma.hourControl.update({
+    const lastRegistry =  await prisma.hourControl.findFirst({
+        where: {
+            id,
+        }
+    });
+
+    const registry =  await prisma.hourControl.update({
         where: {
             id,
         },
         data
     });
+
+    await prisma.logOperation.create({
+        data: {
+            employeeId: registry.employeeId,
+            tableChanged: "registry",
+            operation: "UPDATE",
+            lastValue: JSON.stringify(lastRegistry),
+            newValue: JSON.stringify(registry),
+        }
+    });
+    return registry
 }
 
 export async function updateTotalWorkedByDayRepository(id: number): Promise<HourControl> {

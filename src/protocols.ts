@@ -36,7 +36,7 @@ export type NewRegistryInput = {
 export type NewRegistry = {
     employeeId: number;
     day: Date;
-    entry_time?: Date;
+    entry_time: Date;
     exit_time?: Date;
     totalWorkedByDay: Date;
 }

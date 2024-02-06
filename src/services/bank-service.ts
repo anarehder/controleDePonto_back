@@ -1,3 +1,4 @@
+import moment from "moment";
 import { conflictError, invalidParamError } from "../errors";
 import { NewBankHoursRegistry, PostHoursCompleteReturn, SummaryReport, UpdateBankHoursRegistry } from "../protocols";
 import { getMonthHoursByEmployeeRepository, getSummaryReportRepository, getSummaryReportMonthRepository, getTodayHoursByEmployeeRepository, postBankControlRepository, updateBankControlRepository, updateTotalWorkedByDayRepository, getBankHoursRepository, updateBankHoursRepository, postBankHoursRepository, getSummaryReportHoursByMonthRepository } from "../repositories";
@@ -6,7 +7,7 @@ import { calculateFullBalance, calculateMonthHoursService } from "./hours-servic
 export async function getTodayHoursService(employeeId:number, day: string): Promise <SummaryReport> {
     const today = new Date(day);
     const yearMonth = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}`;
-    const lastMonth = calculateLastMonthString(yearMonth);
+    const lastMonth = getLastMonth(yearMonth);
 
     const hours = await getTodayHoursByEmployeeRepository(employeeId, today);
     const summary = await getSummaryReportRepository(employeeId,yearMonth);
@@ -18,7 +19,7 @@ export async function getTodayHoursService(employeeId:number, day: string): Prom
 
 export async function getMonthHoursService(employeeId:number, yearMonth: string) {
     const { startDate, endDate } = getStartEndDate(yearMonth);
-    const lastMonth = calculateLastMonthString(yearMonth);
+    const lastMonth = getLastMonth(yearMonth);
     const completeReport = await getMonthHoursByEmployeeRepository(employeeId, startDate, endDate); // todas as horas do mês atual
     const summary = await getSummaryReportRepository(employeeId, yearMonth); // geral mês atual
     const lastMonthFullBalance = await getSummaryReportMonthRepository(employeeId,lastMonth); //fullBalance mês anterior
@@ -29,20 +30,28 @@ export async function getMonthHoursService(employeeId:number, yearMonth: string)
 export async function postBankHourService(employeeId: number, day: Date, time: Date, type: string) {
     const dayZero = new Date(day);
     const registryExists = await getTodayHoursByEmployeeRepository(employeeId, dayZero);
-
+    // fltrar para algum registro sem exit_time nesse dia, porque ai é um que iniciou e nao terminou
     const formattedTime = `${day}T${time}Z`
     if (registryExists) {
+        // se o registro existe devo ter type = exit time, se nao for eu não altero nada
         const formattedTime = `${day}T${time}Z`
-        const data = {employeeId, day: new Date(day), [type]: new Date(formattedTime)};
-        //fazer a verificação
-        if (type === "exit_time" && registryExists.entry_time){
+        //fazer a verificação.
+        if (type === "exit_time" && registryExists.entry_time && !registryExists.exit_time){
             if (new Date(registryExists.entry_time) > new Date(formattedTime)){
                 throw conflictError("incompatible hours");
             }
+            const data = {employeeId, day: new Date(day), entry_time: registryExists.entry_time, [type]: new Date(formattedTime)};
+            const hours = await updateBankControlRepository(registryExists.id, data);
+            return hours;
         }
-        const hours = await updateBankControlRepository(registryExists.id, data);
-        return hours;
-    } else {
+        if (type === "exit_time" && registryExists.entry_time && registryExists.exit_time){
+            throw conflictError("Insert an entry time first to create a new registry");
+        }
+    } 
+    if (!registryExists && type==="exit_time") {
+        throw conflictError("Insert an entry time first!");
+    }
+    if (!registryExists && type==="entry_time")  {
         const data = {employeeId, day: new Date(day), [type]: new Date(formattedTime), totalWorkedByDay: new Date(dayZero)};
         const hours = await postBankControlRepository(data);
         return hours;
@@ -63,16 +72,14 @@ export async function updateBankHours(id: number, employeeId: number, day:Date):
     return {workedTodayAmount, bankHours};
 }
 
-export function calculateLastMonthString(yearMonth: string) {
-    const [year, month] = yearMonth.split("-").map(Number);
-    if (month === 1){
-        const yearLastMonth = `${year-1}-12`;
-        return yearLastMonth;
-    } else {
-        const yearLastMonth = `${year}-${String(month-1).padStart(2, '0')}`;
-        return yearLastMonth;
-    }
+export function getLastMonth(month: string){
+    const thisMonth = moment(month, 'YYYY-MM');
+    const lastMonth = thisMonth.subtract(1, 'months');
+
+    const latMonthFormatted = lastMonth.format('YYYY-MM');
+    return latMonthFormatted;
 }
+
 
 function getStartEndDate (yearMonth: string) {
     const [year, month] = yearMonth.split('-').map(Number);

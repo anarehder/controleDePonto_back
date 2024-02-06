@@ -86,8 +86,6 @@ describe("GET /bank/today/:today", () => {
                         "employeeId": user.id,
                         "day": `${formattedToday}T00:00:00.000Z`,
                         "entry_time": `${formattedToday}T08:00:00.000Z`,
-                        "pause_time": null,
-                        "return_time": null,
                         "exit_time": null,
                         "totalWorkedByDay": `${formattedToday}T00:00:00.000Z`,
                         "createdAt": expect.any(String),

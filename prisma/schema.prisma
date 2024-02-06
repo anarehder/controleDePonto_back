@@ -37,7 +37,7 @@ model HourControl {
   employeeId          Int
   User                User               @relation(fields: [employeeId], references: [id])
   day                 DateTime
-  entry_time          DateTime?
+  entry_time          DateTime
   exit_time           DateTime?
   totalWorkedByDay    DateTime   
   createdAt           DateTime           @default(now())
