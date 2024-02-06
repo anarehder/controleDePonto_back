@@ -35,13 +35,8 @@ export async function postBankHourService(employeeId: number, day: Date, time: D
         const formattedTime = `${day}T${time}Z`
         const data = {employeeId, day: new Date(day), [type]: new Date(formattedTime)};
         //fazer a verificação
-        if (type === "pause_time" && registryExists.entry_time){
+        if (type === "exit_time" && registryExists.entry_time){
             if (new Date(registryExists.entry_time) > new Date(formattedTime)){
-                throw conflictError("incompatible hours");
-            }
-        }
-        if (type === "exit_time" && registryExists.return_time){
-            if (new Date(registryExists.return_time) > new Date(formattedTime)){
                 throw conflictError("incompatible hours");
             }
         }

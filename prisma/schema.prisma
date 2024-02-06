@@ -38,8 +38,6 @@ model HourControl {
   User                User               @relation(fields: [employeeId], references: [id])
   day                 DateTime
   entry_time          DateTime?
-  pause_time          DateTime?
-  return_time         DateTime?
   exit_time           DateTime?
   totalWorkedByDay    DateTime   
   createdAt           DateTime           @default(now())

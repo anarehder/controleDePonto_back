@@ -70,8 +70,6 @@ describe("POST /bank", () => {
                     employeeId: user.id,
                     day: `${body.day}T00:00:00.000Z`,
                     entry_time: `${body.day}T${body.time}:00.000Z`,
-                    pause_time: null,
-                    return_time: null,
                     exit_time: null,
                     totalWorkedByDay: `${body.day}T00:00:00.000Z`,
                     updatedAt: expect.any(String),
@@ -84,12 +82,8 @@ describe("POST /bank", () => {
             const token = await generateValidToken(user);
             const body1 = {day: "2024-01-01", time: "08:00", type:"entry_time"};
             await server.post("/bank").set("Authorization", `Bearer ${token}`).send(body1);
-            const body2 = {day: "2024-01-01", time: "12:00", type:"pause_time"};
-            await server.post("/bank").set("Authorization", `Bearer ${token}`).send(body2);
-            const body3 = {day: "2024-01-01", time: "14:00", type:"return_time"};
-            await server.post("/bank").set("Authorization", `Bearer ${token}`).send(body3);
-            const body4 = {day: "2024-01-01", time: "18:00", type:"exit_time"};
-            const response = await server.post("/bank").set("Authorization", `Bearer ${token}`).send(body4);
+            const body2 = {day: "2024-01-01", time: "16:00", type:"exit_time"};
+            const response = await server.post("/bank").set("Authorization", `Bearer ${token}`).send(body2);
             
             expect(response.status).toBe(httpStatus.OK);
             expect(response.body).toEqual(
@@ -99,9 +93,7 @@ describe("POST /bank", () => {
                         "employeeId": user.id,
                         "day": "2024-01-01T00:00:00.000Z",
                         "entry_time": "2024-01-01T08:00:00.000Z",
-                        "pause_time": "2024-01-01T12:00:00.000Z",
-                        "return_time": "2024-01-01T14:00:00.000Z",
-                        "exit_time": "2024-01-01T18:00:00.000Z",
+                        "exit_time": "2024-01-01T16:00:00.000Z",
                         "totalWorkedByDay": "2024-01-01T08:00:00.000Z",
                         "createdAt": expect.any(String),
                         "updatedAt": expect.any(String),

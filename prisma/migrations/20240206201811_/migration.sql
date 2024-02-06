@@ -29,8 +29,6 @@ CREATE TABLE `HourControl` (
     `employeeId` INTEGER NOT NULL,
     `day` DATETIME(3) NOT NULL,
     `entry_time` DATETIME(3) NULL,
-    `pause_time` DATETIME(3) NULL,
-    `return_time` DATETIME(3) NULL,
     `exit_time` DATETIME(3) NULL,
     `totalWorkedByDay` DATETIME(3) NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),

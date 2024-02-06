@@ -37,8 +37,6 @@ export type NewRegistry = {
     employeeId: number;
     day: Date;
     entry_time?: Date;
-    pause_time?: Date;
-    return_time?: Date;
     exit_time?: Date;
     totalWorkedByDay: Date;
 }
@@ -47,8 +45,6 @@ export type UpdateRegistry = {
     employeeId: number;
     day: Date;
     entry_time?: Date;
-    pause_time?: Date;
-    return_time?: Date;
     exit_time?: Date;
 }
 
@@ -65,7 +61,6 @@ export type MonthBalance = {
 export type MonthTotalHours = {
     totalHoursByMonth: string | null;
 }
-
 
 export type TotalWorkedHoursByMonth = {
     totalWorkedSeconds: number;

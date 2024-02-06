@@ -164,8 +164,6 @@ describe("GET /bank/month/:month", () => {
             const user = await createUser();
             const newToken = await generateValidToken(user);
             const registry = await insertHour(formattedToday, "08:00", "entry_time", user.id );
-            await updateHour(registry.id, formattedToday, "12:00", "pause_time", user.id );
-            await updateHour(registry.id, formattedToday, "14:00", "return_time", user.id );
             await updateHour(registry.id, formattedToday, "18:00", "exit_time", user.id );
             const response = await server.get(`/bank/month/${yearMonth}`).set("Authorization", `Bearer ${newToken}`);
         
@@ -185,8 +183,6 @@ describe("GET /bank/month/:month", () => {
                             "entry_time": `${formattedToday}T08:00:00.000Z`,
                             "exit_time": `${formattedToday}T18:00:00.000Z`,
                             "id": expect.any(Number),
-                            "pause_time": `${formattedToday}T12:00:00.000Z`,
-                            "return_time": `${formattedToday}T14:00:00.000Z`,
                             "totalWorkedByDay": expect.any(String),
                             "updatedAt": expect.any(String),
                         })

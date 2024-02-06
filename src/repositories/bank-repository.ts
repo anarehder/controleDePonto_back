@@ -67,9 +67,20 @@ export async function getSummaryReportHoursByMonthRepository(employeeId: number,
 }
 
 export async function postBankControlRepository(data: NewRegistry): Promise<HourControl> {
-    return await prisma.hourControl.create({
+    const registry = await prisma.hourControl.create({
         data
     });
+
+    await prisma.logOperation.create({
+        data: {
+            employeeId: registry.employeeId,
+            tableChanged: "registry",
+            operation: "INSERT",
+            newValue: JSON.stringify(registry),
+        }
+    });
+
+    return registry
 }
 
 export async function updateBankControlRepository(id: number, data: UpdateRegistry): Promise<HourControl> {
@@ -84,9 +95,7 @@ export async function updateBankControlRepository(id: number, data: UpdateRegist
 export async function updateTotalWorkedByDayRepository(id: number): Promise<HourControl> {
     await prisma.$queryRaw`
     UPDATE HourControl
-    SET totalWorkedByDay = SEC_TO_TIME(
-        TIME_TO_SEC(TIMEDIFF(pause_time, entry_time)) + TIME_TO_SEC(TIMEDIFF(exit_time, return_time))
-    )
+    SET totalWorkedByDay = SEC_TO_TIME(TIME_TO_SEC(TIMEDIFF(exit_time, entry_time)))
     WHERE id = ${id}`;
 
     const updatedData = await prisma.hourControl.findUnique({
