@@ -54,11 +54,13 @@ CREATE TABLE `BankHours` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `DataControl` (
+CREATE TABLE `LogOperation` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `employeeId` INTEGER NOT NULL,
     `tableChanged` VARCHAR(191) NOT NULL,
-    `typeOfChange` VARCHAR(191) NOT NULL,
+    `operation` VARCHAR(191) NOT NULL,
+    `lastValue` VARCHAR(1000) NULL,
+    `newValue` VARCHAR(1000) NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
@@ -75,4 +77,4 @@ ALTER TABLE `HourControl` ADD CONSTRAINT `HourControl_employeeId_fkey` FOREIGN K
 ALTER TABLE `BankHours` ADD CONSTRAINT `BankHours_employeeId_fkey` FOREIGN KEY (`employeeId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `DataControl` ADD CONSTRAINT `DataControl_employeeId_fkey` FOREIGN KEY (`employeeId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `LogOperation` ADD CONSTRAINT `LogOperation_employeeId_fkey` FOREIGN KEY (`employeeId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

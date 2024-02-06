@@ -20,7 +20,7 @@ model User {
   Session             Session[]
   HourControl         HourControl[]
   BankHours           BankHours[]
-  DataControl         DataControl[]
+  DataControl         LogOperation[]
 }
 
 model Session {
@@ -58,12 +58,14 @@ model BankHours {
   updatedAt           DateTime           @updatedAt @default(now())
 }
 
-model DataControl {
+model LogOperation {
   id                  Int                @id @default(autoincrement())
   employeeId          Int
   User                User               @relation(fields: [employeeId], references: [id])
-  tableChanged        String
-  typeOfChange        String
+  tableChanged        String 
+  operation           String
+  lastValue           String?            @db.VarChar(1000)          
+  newValue            String             @db.VarChar(1000)
   createdAt           DateTime           @default(now())
   updatedAt           DateTime           @updatedAt @default(now())
 }
