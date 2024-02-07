@@ -4,7 +4,7 @@ import cors from "cors";
 
 import { loadEnv, connectDb, disconnectDB } from "./config";
 import { handleApplicationErrors } from "./middlewares";
-import { bankRouter, loginRouter, usersRouter } from "./routers";
+import { bankRouter, loginRouter, sessionRouter, usersRouter } from "./routers";
 
 loadEnv();
 
@@ -14,6 +14,7 @@ app
   .use(express.json())
   .get("/health", (_req, res) => res.send("OK!"))
   .use("/users", usersRouter)
+  .use("/session", sessionRouter)
   .use("/bank", bankRouter)
   .use("/login", loginRouter)
   .use(handleApplicationErrors);

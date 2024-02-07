@@ -8,6 +8,11 @@ export type NewUserInput = {
 
 export type LoginParams = Omit<NewUserInput, 'name'>;
 
+export type SessionParams = {
+    username: string;
+    token: string;
+};
+
 export type EmployeeLogin = {
     id: number;
     name: string;
