@@ -30,7 +30,7 @@ export async function getMonthHoursController (req: AuthenticatedRequest, res: R
 export async function postBankHourController (req: AuthenticatedRequest, res: Response) {
     const employeeId = req.employeeId;
     const { day, time, type } = req.body as NewRegistryInput;
-    
+
     const today = new Date();
     const dataLimite = new Date();
     dataLimite.setDate(today.getDate() - 10);

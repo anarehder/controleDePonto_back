@@ -49,7 +49,7 @@ export type UpdateRegistry = {
 }
 
 export type SummaryReport = {
-    hourControls: HourControl | null;
+    hourControls: HourControl[] | null;
     bankHours: BankHours | null;
     bankBalanceLastMonth: {hoursBankBalance: String} | null;
 }

@@ -2,8 +2,8 @@ import { prisma } from "../config";
 import { MonthBalance, MonthTotalHours, NewBankHoursRegistry, NewRegistry, TotalWorkedHoursByMonth, UpdateBankHoursRegistry, UpdateRegistry } from "../protocols";
 import { BankHours, HourControl } from "@prisma/client";
 
-export async function getTodayHoursByEmployeeRepository(employeeId: number, day: Date): Promise<HourControl | null> {
-    const result = await prisma.hourControl.findFirst({
+export async function getTodayHoursByEmployeeRepository(employeeId: number, day: Date): Promise<HourControl[] | null> {
+    const result = await prisma.hourControl.findMany({
         where: {
             employeeId,
             day,
@@ -74,7 +74,7 @@ export async function postBankControlRepository(data: NewRegistry): Promise<Hour
     await prisma.logOperation.create({
         data: {
             employeeId: registry.employeeId,
-            tableChanged: "registry",
+            tableChanged: "hourControl",
             operation: "INSERT",
             newValue: JSON.stringify(registry),
         }
@@ -100,7 +100,7 @@ export async function updateBankControlRepository(id: number, data: UpdateRegist
     await prisma.logOperation.create({
         data: {
             employeeId: registry.employeeId,
-            tableChanged: "registry",
+            tableChanged: "hourControl",
             operation: "UPDATE",
             lastValue: JSON.stringify(lastRegistry),
             newValue: JSON.stringify(registry),

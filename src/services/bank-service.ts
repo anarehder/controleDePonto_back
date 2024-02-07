@@ -29,29 +29,34 @@ export async function getMonthHoursService(employeeId:number, yearMonth: string)
 
 export async function postBankHourService(employeeId: number, day: Date, time: Date, type: string) {
     const dayZero = new Date(day);
-    const registryExists = await getTodayHoursByEmployeeRepository(employeeId, dayZero);
-    // fltrar para algum registro sem exit_time nesse dia, porque ai é um que iniciou e nao terminou
+    const registries = await getTodayHoursByEmployeeRepository(employeeId, dayZero);
+    const uncompletedRegistry = registries.find(r => r.exit_time === null);
     const formattedTime = `${day}T${time}Z`
-    if (registryExists) {
-        // se o registro existe devo ter type = exit time, se nao for eu não altero nada
-        const formattedTime = `${day}T${time}Z`
-        //fazer a verificação.
-        if (type === "exit_time" && registryExists.entry_time && !registryExists.exit_time){
-            if (new Date(registryExists.entry_time) > new Date(formattedTime)){
+    registries.forEach(r => {
+        if (r.entry_time < new Date(formattedTime) && new Date(formattedTime) < r.exit_time) {
+            throw conflictError("Choose a time outside your already worked time");
+        }
+    });
+    if (uncompletedRegistry) {
+        if (type === "exit_time" && uncompletedRegistry.entry_time && !uncompletedRegistry.exit_time){
+            if (new Date(uncompletedRegistry.entry_time) > new Date(formattedTime)){
                 throw conflictError("incompatible hours");
             }
-            const data = {employeeId, day: new Date(day), entry_time: registryExists.entry_time, [type]: new Date(formattedTime)};
-            const hours = await updateBankControlRepository(registryExists.id, data);
+            const data = {employeeId, day: new Date(day), entry_time: uncompletedRegistry.entry_time, [type]: new Date(formattedTime)};
+            const hours = await updateBankControlRepository(uncompletedRegistry.id, data);
             return hours;
         }
-        if (type === "exit_time" && registryExists.entry_time && registryExists.exit_time){
-            throw conflictError("Insert an entry time first to create a new registry");
+        if (type === "exit_time" && uncompletedRegistry.entry_time && uncompletedRegistry.exit_time){
+            throw conflictError("Insert an entry time first to start a new registry");
+        }
+        if (type === "entry_time" && uncompletedRegistry.entry_time && !uncompletedRegistry.exit_time){
+            throw conflictError("Complete the last registry before start another one");
         }
     } 
-    if (!registryExists && type==="exit_time") {
+    if (!uncompletedRegistry && type==="exit_time") {
         throw conflictError("Insert an entry time first!");
     }
-    if (!registryExists && type==="entry_time")  {
+    if (!uncompletedRegistry && type==="entry_time")  {
         const data = {employeeId, day: new Date(day), [type]: new Date(formattedTime), totalWorkedByDay: new Date(dayZero)};
         const hours = await postBankControlRepository(data);
         return hours;
@@ -68,7 +73,7 @@ export async function updateBankHours(id: number, employeeId: number, day:Date):
 
     const bankHoursData = await calculateMonthHoursService(employeeId, startDate, endDate, yearMonth);
     const bankHours = await checkBankHoursRegistry(employeeId, yearMonth,bankHoursData);
-    await updateFullBalanceNextMonths(yearMonth, employeeId); 
+    await updateFullBalanceNextMonths(yearMonth, employeeId);
     return {workedTodayAmount, bankHours};
 }
 
@@ -108,28 +113,24 @@ async function checkBankHoursRegistry(employeeId: number, yearMonth: string, inp
 
 // conferir se tem meses subsequentes para alterar também...
 export async function updateFullBalanceNextMonths(yearMonth: string, employeeId: number) {
-    const today = new Date();
-    const [year, month] = yearMonth.split("-").map(Number);
-    const monthDifference = ((today.getFullYear() - year) * 12) + ((today.getMonth() + 1) - month);
+    const today = moment();
+    const thisMonth = moment(yearMonth, 'YYYY-MM');
 
-    for (let i = 1; i < monthDifference + 1; i++) {
-        const testMonth = month + i;
-        if ((testMonth / 12) > 1) {
-            const thisYear = year + 1;
-            const thisMonth = testMonth % 12;
-            await calculateNextMonthsFullBalance(thisYear, thisMonth, employeeId);
-        } else {
-            await calculateNextMonthsFullBalance(year, testMonth, employeeId);
-        }
+    if(today.isAfter(thisMonth, 'month')){
+        const nextMonth = thisMonth.add(1, 'months');
+        const nextMonthFormatted = nextMonth.format('YYYY-MM');
+        await calculateNextMonthsFullBalance(nextMonthFormatted, employeeId);
+    } else {
+        console.log("é desse mês")
     }
 }
 
-async function calculateNextMonthsFullBalance(thisYear: number, thisMonth: number, employeeId: number ) {
-    const thisYearMonth = `${thisYear}-${String(thisMonth).padStart(2, '0')}`;
-    //pegar o monthBalance do mês em que vou atualizar (nextYearMonth)
+async function calculateNextMonthsFullBalance(nextMonth: string, employeeId: number ) {
+    const thisYearMonth = `${String(nextMonth).padStart(2, '0')}`;
     const { totalHoursByMonth } = await getSummaryReportHoursByMonthRepository(employeeId, thisYearMonth);
-    const monthFullBalance = await calculateFullBalance(employeeId, thisYearMonth, totalHoursByMonth);
-    const bankHoursData = { hoursBankBalance: monthFullBalance };
-    const bankHours = await checkBankHoursRegistry(employeeId, thisYearMonth, bankHoursData);
-    return bankHours;
+    if (totalHoursByMonth !== "00:00"){
+        const monthFullBalance = await calculateFullBalance(employeeId, thisYearMonth, totalHoursByMonth);
+        const bankHoursData = { hoursBankBalance: monthFullBalance };
+        await checkBankHoursRegistry(employeeId, thisYearMonth, bankHoursData);
+    }
 }
