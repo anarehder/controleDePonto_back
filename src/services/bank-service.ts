@@ -6,9 +6,9 @@ import { calculateFullBalance, calculateMonthHoursService } from "./hours-servic
 
 export async function getTodayHoursService(employeeId:number, day: string): Promise <SummaryReport> {
     const today = new Date(day);
-    const yearMonth = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}`;
+    const yearMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
     const lastMonth = getLastMonth(yearMonth);
-
+    
     const hours = await getTodayHoursByEmployeeRepository(employeeId, today);
     const summary = await getSummaryReportRepository(employeeId,yearMonth);
     const lastMonthFullBalance = await getSummaryReportMonthRepository(employeeId,lastMonth); //fullBalance mês anterior
