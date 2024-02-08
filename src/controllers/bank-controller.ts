@@ -1,6 +1,6 @@
 import { AuthenticatedRequest } from "../middlewares";
 import { GetUserReportInput, NewRegistryInput } from "../protocols";
-import { updateBankHours, getMonthHoursService, getTodayHoursService, postBankHourService } from "../services";
+import { updateBankHours, getMonthHoursService, getTodayHoursService, postBankHourService, getGeneralMonthHoursService } from "../services";
 import { Response } from "express";
 import httpStatus from "http-status";
 
@@ -56,6 +56,19 @@ export async function getUserReportController (req: AuthenticatedRequest, res: R
     try {
         const hours = await getMonthHoursService(employeeId, month);
         return res.status(httpStatus.OK).send(hours);
+    } catch (error) {
+        return res.status(httpStatus.UNAUTHORIZED).send(error);
+    }
+}
+
+export async function getGeneralReportController (req: AuthenticatedRequest, res: Response) {
+    const { month, employeeId } = req.body as GetUserReportInput;
+    if (employeeId !== 1) {
+        return res.status(httpStatus.UNAUTHORIZED).send("Only admin user can use this route");
+    }
+    try {
+        const fullReport = await getGeneralMonthHoursService(month);
+        return res.status(httpStatus.OK).send(fullReport);
     } catch (error) {
         return res.status(httpStatus.UNAUTHORIZED).send(error);
     }

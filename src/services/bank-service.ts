@@ -1,8 +1,9 @@
 import moment from "moment";
 import { conflictError, invalidParamError } from "../errors";
-import { NewBankHoursRegistry, PostHoursCompleteReturn, SummaryReport, UpdateBankHoursRegistry } from "../protocols";
+import { FullReport, NewBankHoursRegistry, PostHoursCompleteReturn, SummaryReport, UpdateBankHoursRegistry } from "../protocols";
 import { getMonthHoursByEmployeeRepository, getSummaryReportRepository, getSummaryReportMonthRepository, getTodayHoursByEmployeeRepository, postBankControlRepository, updateBankControlRepository, updateTotalWorkedByDayRepository, getBankHoursRepository, updateBankHoursRepository, postBankHoursRepository, getSummaryReportHoursByMonthRepository } from "../repositories";
 import { calculateFullBalance, calculateMonthHoursService } from "./hours-service";
+import { getUsersService } from "./users-service";
 
 export async function getTodayHoursService(employeeId:number, day: string): Promise <SummaryReport> {
     const today = new Date(day);
@@ -25,6 +26,18 @@ export async function getMonthHoursService(employeeId:number, yearMonth: string)
     const lastMonthFullBalance = await getSummaryReportMonthRepository(employeeId,lastMonth); //fullBalance mês anterior
     const response = {hourControls: completeReport, bankHours: summary, bankBalanceLastMonth: lastMonthFullBalance};
     return response;
+}
+
+export async function getGeneralMonthHoursService(month: string){
+    const employees = await getUsersService();
+    const fullReport: FullReport[] = [];
+    for (const employee of employees) {
+        const { id } = employee;
+        const report = await getMonthHoursService(id, month);
+        const object = {...employee, report: report};
+        fullReport.push(object);
+    }
+    return fullReport;
 }
 
 export async function postBankHourService(employeeId: number, day: Date, time: Date, type: string) {

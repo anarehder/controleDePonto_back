@@ -3,8 +3,14 @@ import { NewUserInput } from "../protocols";
 import { User } from "@prisma/client";
 
 
-export async function getUsersListRepository () : Promise <User[] | null> {
-    return await prisma.user.findMany();
+export async function getUsersListRepository(): Promise<User[] | null> {
+    return await prisma.user.findMany({
+        where: {
+            NOT: {
+                username: 'admin'
+            }
+        }
+    });
 }
 
 export async function getUsersByIdRepository(employeeId: number): Promise <User | null> {

@@ -22,6 +22,13 @@ export type EmployeeLogin = {
 
 export type EmployeeReturn = Omit<EmployeeLogin, 'token'>;
 
+export type FullReport = {
+    id: number;
+    name: string;
+    username: string;
+    report: SummaryReport
+}
+
 export type SessionInput = {
     employeeId: number;
     token: string;
