@@ -1,6 +1,6 @@
 import { AuthenticatedRequest } from "../middlewares";
 import { GetUserReportInput, NewRegistryInput } from "../protocols";
-import { updateBankHours, getMonthHoursService, getTodayHoursService, postBankHourService, getGeneralMonthHoursService } from "../services";
+import { updateBankHours, getMonthHoursService, getTodayHoursService, postBankHourService, getGeneralMonthHoursService, deleteHoursService } from "../services";
 import { Response } from "express";
 import httpStatus from "http-status";
 
@@ -69,6 +69,23 @@ export async function getGeneralReportController (req: AuthenticatedRequest, res
     try {
         const fullReport = await getGeneralMonthHoursService(month);
         return res.status(httpStatus.OK).send(fullReport);
+    } catch (error) {
+        return res.status(httpStatus.UNAUTHORIZED).send(error);
+    }
+}
+
+export async function deleteHoursController (req: AuthenticatedRequest, res: Response) {
+    const { hourControlId } = req.params;
+    const { employeeId } = req;
+    if (employeeId !== 1) {
+        return res.status(httpStatus.UNAUTHORIZED).send("Only admin user can use this route");
+    }
+    if (isNaN(Number(hourControlId))){
+        return res.status(httpStatus.FORBIDDEN).send("Only numbers in this route");
+    }
+    try {
+        const hours = await deleteHoursService(Number(hourControlId),employeeId);
+        return res.sendStatus(httpStatus.OK);
     } catch (error) {
         return res.status(httpStatus.UNAUTHORIZED).send(error);
     }

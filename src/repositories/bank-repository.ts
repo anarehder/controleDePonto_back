@@ -164,3 +164,29 @@ export async function getBankHoursRepository (employeeId: number, month: string)
         },
     })
 }
+
+export async function getHoursByIdRepository(hourControlId: number) {
+    return await prisma.hourControl.findFirst({
+        where: {
+            id: hourControlId
+        }
+    })
+}
+
+export async function deleteHoursRepository(hourControlId: number, employeeId: number, registryExists: NewRegistry) {
+    await prisma.hourControl.delete({
+        where: {
+            id: hourControlId
+        }
+    })
+
+    await prisma.logOperation.create({
+        data: {
+            employeeId: employeeId,
+            tableChanged: "hourControl",
+            operation: "DELETE",
+            lastValue: JSON.stringify(registryExists)
+        }
+    });
+    return("ok");
+}

@@ -1,7 +1,7 @@
 import moment from "moment";
 import { conflictError, invalidParamError } from "../errors";
 import { FullReport, NewBankHoursRegistry, PostHoursCompleteReturn, SummaryReport, UpdateBankHoursRegistry } from "../protocols";
-import { getMonthHoursByEmployeeRepository, getSummaryReportRepository, getSummaryReportMonthRepository, getTodayHoursByEmployeeRepository, postBankControlRepository, updateBankControlRepository, updateTotalWorkedByDayRepository, getBankHoursRepository, updateBankHoursRepository, postBankHoursRepository, getSummaryReportHoursByMonthRepository } from "../repositories";
+import { getMonthHoursByEmployeeRepository, getSummaryReportRepository, getSummaryReportMonthRepository, getTodayHoursByEmployeeRepository, postBankControlRepository, updateBankControlRepository, updateTotalWorkedByDayRepository, getBankHoursRepository, updateBankHoursRepository, postBankHoursRepository, getSummaryReportHoursByMonthRepository, deleteHoursRepository, getHoursByIdRepository } from "../repositories";
 import { calculateFullBalance, calculateMonthHoursService } from "./hours-service";
 import { getUsersService } from "./users-service";
 
@@ -146,4 +146,12 @@ async function calculateNextMonthsFullBalance(nextMonth: string, employeeId: num
         const bankHoursData = { hoursBankBalance: monthFullBalance };
         await checkBankHoursRegistry(employeeId, thisYearMonth, bankHoursData);
     }
+}
+
+export async function deleteHoursService(hourControlId: number, employeeId: number) {
+    const registryExists = await getHoursByIdRepository(hourControlId);
+    if (!registryExists) {
+        throw conflictError("This registry ID does not exist!");
+    }
+    await deleteHoursRepository(hourControlId, employeeId, registryExists);
 }

@@ -51,6 +51,8 @@ export type NewRegistry = {
     entry_time: Date;
     exit_time?: Date;
     totalWorkedByDay: Date;
+    createdAt?: Date;
+    updatedAt?: Date;
 }
 
 export type UpdateRegistry = {
