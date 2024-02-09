@@ -32,7 +32,7 @@ export async function getMonthHoursByEmployeeRepository(employeeId: number, star
             },
         },
         orderBy: {
-            day: 'desc',
+            entry_time: 'desc',
         },
     });
 }
