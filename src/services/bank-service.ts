@@ -1,7 +1,7 @@
 import moment from "moment";
 import { conflictError, invalidParamError } from "../errors";
 import { FullReport, NewBankHoursRegistry, PostHoursCompleteReturn, SummaryReport, UpdateBankHoursRegistry } from "../protocols";
-import { getMonthHoursByEmployeeRepository, getSummaryReportRepository, getSummaryReportMonthRepository, getTodayHoursByEmployeeRepository, postBankControlRepository, updateBankControlRepository, updateTotalWorkedByDayRepository, getBankHoursRepository, updateBankHoursRepository, postBankHoursRepository, getSummaryReportHoursByMonthRepository, deleteHoursRepository, getHoursByIdRepository } from "../repositories";
+import { getMonthHoursByEmployeeRepository, getSummaryReportRepository, getSummaryReportMonthRepository, getTodayHoursByEmployeeRepository, postBankControlRepository, updateBankControlRepository, updateTotalWorkedByDayRepository, getBankHoursRepository, updateBankHoursRepository, postBankHoursRepository, getSummaryReportHoursByMonthRepository, deleteHoursRepository, getHoursByIdRepository, getIncompleteHoursByEmployeeRepository } from "../repositories";
 import { calculateFullBalance, calculateMonthHoursService } from "./hours-service";
 import { getUsersService } from "./users-service";
 
@@ -43,7 +43,7 @@ export async function getGeneralMonthHoursService(month: string){
 export async function postBankHourService(employeeId: number, day: Date, time: Date, type: string) {
     const dayZero = new Date(day);
     const registries = await getTodayHoursByEmployeeRepository(employeeId, dayZero);
-    const uncompletedRegistry = registries.find(r => r.exit_time === null);
+    const uncompletedRegistry = await getIncompleteHoursByEmployeeRepository(employeeId, dayZero);
     const formattedTime = `${day}T${time}Z`
     registries.forEach(r => {
         if (r.entry_time < new Date(formattedTime) && new Date(formattedTime) < r.exit_time) {
@@ -55,9 +55,28 @@ export async function postBankHourService(employeeId: number, day: Date, time: D
             if (new Date(uncompletedRegistry.entry_time) > new Date(formattedTime)){
                 throw conflictError("incompatible hours");
             }
-            const data = {employeeId, day: new Date(day), entry_time: uncompletedRegistry.entry_time, [type]: new Date(formattedTime)};
-            const hours = await updateBankControlRepository(uncompletedRegistry.id, data);
-            return hours;
+            const diffInDays = moment(formattedTime).diff(moment(uncompletedRegistry.entry_time), 'days');
+            if (diffInDays > 1){
+                throw conflictError("Check dates, more than 1 day in difference");
+            }
+            const isNextDay = moment(formattedTime).isSame(moment(uncompletedRegistry.entry_time).clone().add(1, 'day'), 'day');
+            if (isNextDay) {
+                const dayBefore = moment(day).subtract(1, 'day').format('YYYY-MM-DD');
+                const endOfDay = `${dayBefore}T23:59:59.999Z`;
+                const data1 = {employeeId, day: uncompletedRegistry.day, entry_time: uncompletedRegistry.entry_time, [type]: new Date(endOfDay)};
+                await updateBankControlRepository(uncompletedRegistry.id, data1);
+
+                const startOfDay = `${day}T00:00:00Z`;
+                const data2 = {employeeId, day: new Date(day), entry_time: new Date(startOfDay), [type]: new Date(formattedTime), totalWorkedByDay: new Date(formattedTime)};
+                const hours2 = await postBankControlRepository(data2);
+
+                return hours2;
+            }
+            if (moment(formattedTime).isSame(moment(uncompletedRegistry.entry_time))) {
+                const data = {employeeId, day: new Date(day), entry_time: uncompletedRegistry.entry_time, [type]: new Date(formattedTime)};
+                const hours = await updateBankControlRepository(uncompletedRegistry.id, data);
+                return hours;
+            }
         }
         if (type === "exit_time" && uncompletedRegistry.entry_time && uncompletedRegistry.exit_time){
             throw conflictError("Insert an entry time first to start a new registry");
@@ -124,7 +143,6 @@ async function checkBankHoursRegistry(employeeId: number, yearMonth: string, inp
     }
 }
 
-// conferir se tem meses subsequentes para alterar também...
 export async function updateFullBalanceNextMonths(yearMonth: string, employeeId: number) {
     const today = moment();
     const thisMonth = moment(yearMonth, 'YYYY-MM');
@@ -133,8 +151,6 @@ export async function updateFullBalanceNextMonths(yearMonth: string, employeeId:
         const nextMonth = thisMonth.add(1, 'months');
         const nextMonthFormatted = nextMonth.format('YYYY-MM');
         await calculateNextMonthsFullBalance(nextMonthFormatted, employeeId);
-    } else {
-        console.log("é desse mês")
     }
 }
 

@@ -12,6 +12,16 @@ export async function getTodayHoursByEmployeeRepository(employeeId: number, day:
     return result || null;
 }
 
+export async function getIncompleteHoursByEmployeeRepository(employeeId: number, day: Date): Promise<HourControl | null> {
+    const result = await prisma.hourControl.findFirst({
+        where: {
+            employeeId,
+            exit_time: null, 
+        }
+    });
+    return result || null;
+}
+
 export async function getMonthHoursByEmployeeRepository(employeeId: number, startDate: Date, endDate: Date): Promise <HourControl[]> {
     return await prisma.hourControl.findMany({
         where: {
