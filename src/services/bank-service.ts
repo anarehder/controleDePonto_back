@@ -59,8 +59,7 @@ export async function postBankHourService(employeeId: number, day: Date, time: D
             if (diffInDays > 1){
                 throw conflictError("Check dates, more than 1 day in difference");
             }
-            const isNextDay = moment(formattedTime).isSame(moment(uncompletedRegistry.entry_time).clone().add(1, 'day'), 'day');
-            if (isNextDay) {
+            if (diffInDays === 1) {
                 const startOfDay = `${day}T00:00:00Z`;
 
                 const data1 = {employeeId, day: uncompletedRegistry.day, entry_time: uncompletedRegistry.entry_time, [type]: new Date(startOfDay)};
@@ -71,7 +70,7 @@ export async function postBankHourService(employeeId: number, day: Date, time: D
 
                 return hours;
             }
-            if (moment(formattedTime).isSame(moment(uncompletedRegistry.entry_time))) {
+            if (diffInDays === 0) {
                 const data = {employeeId, day: new Date(day), entry_time: uncompletedRegistry.entry_time, [type]: new Date(formattedTime)};
                 const hours = await updateBankControlRepository(uncompletedRegistry.id, data);
                 return hours;
