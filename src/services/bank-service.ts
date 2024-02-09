@@ -61,16 +61,15 @@ export async function postBankHourService(employeeId: number, day: Date, time: D
             }
             const isNextDay = moment(formattedTime).isSame(moment(uncompletedRegistry.entry_time).clone().add(1, 'day'), 'day');
             if (isNextDay) {
-                const dayBefore = moment(day).subtract(1, 'day').format('YYYY-MM-DD');
-                const endOfDay = `${dayBefore}T23:59:59.999Z`;
-                const data1 = {employeeId, day: uncompletedRegistry.day, entry_time: uncompletedRegistry.entry_time, [type]: new Date(endOfDay)};
-                await updateBankControlRepository(uncompletedRegistry.id, data1);
-
                 const startOfDay = `${day}T00:00:00Z`;
-                const data2 = {employeeId, day: new Date(day), entry_time: new Date(startOfDay), [type]: new Date(formattedTime), totalWorkedByDay: new Date(formattedTime)};
-                const hours2 = await postBankControlRepository(data2);
 
-                return hours2;
+                const data1 = {employeeId, day: uncompletedRegistry.day, entry_time: uncompletedRegistry.entry_time, [type]: new Date(startOfDay)};
+                const hours = await updateBankControlRepository(uncompletedRegistry.id, data1);
+
+                const data2 = {employeeId, day: new Date(day), entry_time: new Date(startOfDay), [type]: new Date(formattedTime), totalWorkedByDay: new Date(formattedTime)};
+                await postBankControlRepository(data2);
+
+                return hours;
             }
             if (moment(formattedTime).isSame(moment(uncompletedRegistry.entry_time))) {
                 const data = {employeeId, day: new Date(day), entry_time: uncompletedRegistry.entry_time, [type]: new Date(formattedTime)};
